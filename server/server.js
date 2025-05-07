@@ -1,30 +1,30 @@
 const express = require('express');
 const http = require('http');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const dotenv = require('dotenv');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+
+// Load environment variables
+dotenv.config();
+
 const app = express();
 const server = http.createServer(app);
-const { Server } = require('socket.io');
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const bcrypt = require('bcrypt');
+
+const PORT = process.env.PORT || 3000;
+const DB_PASS = process.env.DB_PASS;
+const SECRET_KEY = process.env.SECRET_KEY || 'live123';
+// console.log(jwt.sign({}, SECRET_KEY, { expiresIn: '1h' }));
+const DB_URL = `mongodb+srv://btiahwpweb:${DB_PASS}@cluster0.9nknrlk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Middleware
-const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-const jwt = require('jsonwebtoken');
-const { error } = require('console');
-const token = jwt.sign({ user: 'admin' }, 'secretKey123', { expiresIn: '1h' });
-// console.log('Token:', token);
-
-// get env data
-require('dotenv').config();
-const port = process.env.PORT;
-const dbPass = process.env.DB_PASS;
-
-// MongoClient
+// Database Connection
 let db;
-const dbUrl = `mongodb+srv://btiahwpweb:${dbPass}@cluster0.9nknrlk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-const client = new MongoClient(dbUrl, {
+const client = new MongoClient(DB_URL, {
     serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
@@ -36,106 +36,71 @@ async function dbConnect() {
     try {
         await client.connect();
         db = client.db('sample_mflix');
-        console.log("Connected to MongoDB");
+        console.log("✅ Connected to MongoDB");
     } catch (error) {
-        console.error("MongoDB Connection Error:", error);
+        console.error("❌ MongoDB Connection Error:", error);
+        process.exit(1); // Exit the process if the connection fails
     }
 }
+dbConnect();
 
-dbConnect()
-
+// Authentication Middleware
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const authtoken = authHeader && authHeader.split(' ')[1];
+    const token = authHeader && authHeader.split(' ')[1];
 
-    if (!authtoken) return res.status(401).json({ error: 'Token missing!' });
+    if (!token) return res.status(401).json({ error: 'Token missing!' });
 
-    jwt.verify(authtoken, 'secretKey123', (err, decode) => {
-        if (err) return res.status(403).json({ error: err });
-        req.decode = decode;
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        if (err) return res.status(403).json({ error: 'Invalid token!' });
+        req.user = decoded;
         next();
-    })
+    });
 }
 
-// app.get('/users', authenticateToken, async (req, res) => {
-app.get('/users', async (req, res) => {
+// Routes
+app.get('/users', authenticateToken, async (req, res) => {
     try {
-        const collection = db.collection('users');
-        const users = await collection.find({
-            email: { $in: ['user1@gmail.com', 'user2@gmail.com'] }
-        }).limit(2).toArray();
-
-        res.json(users)
+        const users = await db.collection('users')
+            .find({ email: { $in: ['user1@gmail.com', 'user2@gmail.com'] } })
+            .limit(2)
+            .toArray();
+        
+        res.json(users);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch users' })
+        res.status(500).json({ error: 'Failed to fetch users' });
     }
-})
+});
 
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const collection = db.collection('users');
-        const user = await collection.findOne({ email });
+        const user = await db.collection('users').findOne({ email });
 
-        if(!user) return res.status(404).json({error: 'User not found!'});
-        
+        if (!user) return res.status(404).json({ error: 'User not found!' });
+
         const match = await bcrypt.compare(password, user.password);
-        if(!match) return res.status(401).json({error: 'Invalid password!'});
-        
-        // generate jwt token
-        const authToken = jwt.sign({ email: user.email }, 'loginToken', { expiresIn: '1h' });
+        if (!match) return res.status(401).json({ error: 'Invalid password!' });
 
-        res.json({authToken});
+        const authToken = jwt.sign({ username: user.name, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
+
+        res.json({ authToken });
     } catch (error) {
-        return res.status(400).json({error : 'Login Failed!'})
+        res.status(400).json({ error: 'Login Failed!' });
     }
 });
 
+// Health Check Route
 app.get('/test', (req, res) => {
-    console.log("tets");
-    res.send("test hello!");
-})
-
-server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+    console.log("✅ Test Route Accessed");
+    res.send("Test successful!");
 });
 
-
-// // front
-
-// // LoginForm.js
-// import React, { useState } from 'react';
-// import axios from 'axios';
-
-// function LoginForm() {
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const res = await axios.post('http://localhost:3000/login', { email, password });
-//       const token = res.data.token;
-
-//       // Save token to localStorage
-//       localStorage.setItem('token', token);
-//       alert('Login successful!');
-//     } catch (err) {
-//       alert('Login failed: ' + err.response.data.error);
-//     }
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <input type="email" onChange={e => setEmail(e.target.value)} placeholder="Email" />
-//       <input type="password" onChange={e => setPassword(e.target.value)} placeholder="Password" />
-//       <button type="submit">Login</button>
-//     </form>
-//   );
-// }
-
-// export default LoginForm;
+// Start Server
+server.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
 
 
 // token verify
