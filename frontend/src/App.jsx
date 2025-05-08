@@ -1,27 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import LoginForm from './components/LoginForm';
 import Chat from './Chat';
 import './App.css';
-import { parseJwt } from './utils/jwtParser';
+import AuthContext, { AuthProvider } from './context/authContext';
 
 function Menu() {
-  const [username, setUsername] = useState('');
+  const { username, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (token) {
-      const decode = parseJwt(token);
-      if (decode && decode.username) setUsername(decode.username);
-    }
-  }, []);
-
   function handleLogout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
+    logout();
     navigate('/login');
   }
 
@@ -47,17 +37,19 @@ function Menu() {
 
 function App() {
   return (
-    <div className='App'>
-      <h1>bti Healthy Harvest WhatsApp Message</h1>
-      <Router>
-        <Menu />
+    <AuthProvider>
+      <div className='App'>
+        <h1>bti Healthy Harvest WhatsApp Message</h1>
+        <Router>
+          <Menu />
 
-        <Routes>
-          <Route path='/' element={<Chat />} />
-          <Route path='/login' element={<LoginForm />} />
-        </Routes>
-      </Router>
-    </div>
+          <Routes>
+            <Route path='/' element={<Chat />} />
+            <Route path='/login' element={<LoginForm />} />
+          </Routes>
+        </Router>
+      </div>
+    </AuthProvider>
   );
 }
 

@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import AuthContext from '../context/authContext';
+import { useNavigate } from 'react-router-dom';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useContext(AuthContext);
+  const redirectTo = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,8 +23,10 @@ function LoginForm() {
         throw new Error(data.error || 'Login failed!');
       }
 
-      localStorage.setItem('token', data.authToken);
-      alert('Login successful!');
+      login(data.authToken);
+
+      console.log('Login successful!');
+      redirectTo('/');
     } catch (err) {
       alert(`Login failed: ${err.message}`);
     }
