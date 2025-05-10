@@ -14,13 +14,32 @@ const server = http.createServer(app);
 
 const PORT = process.env.PORT || 3000;
 const DB_PASS = process.env.DB_PASS;
-const SECRET_KEY = process.env.SECRET_KEY || 'live123';
-// console.log(jwt.sign({}, SECRET_KEY, { expiresIn: '1h' }));
 const DB_URL = `mongodb+srv://btiahwpweb:${DB_PASS}@cluster0.9nknrlk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// jwt
+const SECRET_KEY = process.env.SECRET_KEY || 'live123';
+const REFRESH_SECRET_KEY = process.env.REFRESH_SECRET_KEY || 'liverefresh123';
+const refreshTokens = [];
+
+const generateAccessToken = (user) => {
+    return jwt.sign({
+        username: user.name, email: user.email
+    }, SECRET_KEY, { expiresIn: '1h' });
+}
+
+const generateRefreshToken = (user) => {
+    const refreshToken = jwt.sign({
+        username: user.name, email: user.email
+    }, REFRESH_SECRET_KEY, { expiresIn: '7d' });
+
+    refreshTokens.push(refreshToken);
+    return refreshToken;
+}
+
 
 // Database Connection
 let db;
@@ -62,10 +81,12 @@ function authenticateToken(req, res, next) {
 app.get('/users', authenticateToken, async (req, res) => {
     try {
         const users = await db.collection('users')
-            .find({ email: { $in: ['user1@gmail.com', 'user2@gmail.com'] } })
+            .find({
+                email: { $in: ['user1@gmail.com', 'user2@gmail.com'] }
+            })
             .limit(2)
             .toArray();
-        
+
         res.json(users);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch users' });
@@ -77,15 +98,18 @@ app.post('/login', async (req, res) => {
 
     try {
         const user = await db.collection('users').findOne({ email });
+        const pass = await bcrypt.compare(password, user.password);
 
-        if (!user) return res.status(404).json({ error: 'User not found!' });
+        if (!user || !pass)
+            return res.status(404).json({
+                error: 'Invalid credential!'
+            });
 
-        const match = await bcrypt.compare(password, user.password);
-        if (!match) return res.status(401).json({ error: 'Invalid password!' });
+        const authToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user)
 
-        const authToken = jwt.sign({ username: user.name, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
-
-        res.json({ authToken });
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'Strict' })
+        res.json({authToken});
     } catch (error) {
         res.status(400).json({ error: 'Login Failed!' });
     }

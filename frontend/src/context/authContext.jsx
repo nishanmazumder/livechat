@@ -13,6 +13,7 @@ export function AuthProvider({ children }) {
 
     const decode = parseJwt(token);
     if (decode && decode.username) {
+      localStorage.setItem('token', token);
       localStorage.setItem('username', decode.username);
       setUsername(decode.username);
     }
