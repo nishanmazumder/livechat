@@ -89,9 +89,33 @@ app.get('/users', authenticateToken, async (req, res) => {
 
         res.json(users);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch users' });
+        res.status(500).json({ error: 'Failed to fetch users! Details:' + error });
     }
 });
+
+app.post('/register', async (req, res) => {
+    const { username, email, password } = req.body;
+    const userExist = await db.collection('users').findOne({ name: username })
+
+    if (userExist)
+        return res.status(400).json({
+            error: 'User already exist!'
+        })
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    try {
+        db.collection('users').insertOne({
+            name: username,
+            email: email,
+            password: hashPassword
+        })
+    } catch (error) {
+        return res.status(500).json({ error: 'Failed to create users! Details:' + error })
+    }
+
+    return res.status(201).json({message:'User created successfully!'})
+})
 
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -109,7 +133,7 @@ app.post('/login', async (req, res) => {
         const refreshToken = generateRefreshToken(user)
 
         res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'Strict' })
-        res.json({authToken});
+        res.json({ authToken });
     } catch (error) {
         res.status(400).json({ error: 'Login Failed!' });
     }

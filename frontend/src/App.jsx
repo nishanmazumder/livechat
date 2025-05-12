@@ -5,6 +5,7 @@ import LoginForm from './components/LoginForm';
 import Chat from './Chat';
 import './App.css';
 import AuthContext, { AuthProvider } from './context/authContext';
+import RegisterForm from './components/RegisterForm';
 
 function Menu() {
   const { username, logout } = useContext(AuthContext);
@@ -23,6 +24,9 @@ function Menu() {
         </li>
         <li>
           <Link to='/login'>Login</Link>
+        </li>
+        <li>
+          <Link to='/register'>Register</Link>
         </li>
         {username && <li className='username'>👤 {username}</li>}
         {username && (
@@ -46,6 +50,7 @@ function App() {
           <Routes>
             <Route path='/' element={<Chat />} />
             <Route path='/login' element={<LoginForm />} />
+            <Route path='/register' element={<RegisterForm />} />
           </Routes>
         </Router>
       </div>

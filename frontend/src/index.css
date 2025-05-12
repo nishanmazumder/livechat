@@ -10,14 +10,14 @@ body {
   margin: 50px auto;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   padding: 20px;
 }
 
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 400px;
+  height: 300px;
 }
 
 .message-list {
@@ -34,12 +34,12 @@ body {
 }
 
 .message.user {
-  background-color: #DCF8C6;
+  background-color: #dcf8c6;
   align-self: flex-end;
 }
 
 .message.system {
-  background-color: #EEE;
+  background-color: #eee;
   align-self: flex-start;
 }
 
