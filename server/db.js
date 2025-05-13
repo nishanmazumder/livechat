@@ -16,11 +16,15 @@ const client = new MongoClient(DB_URL, {
 
 async function dbConnect() {
     if (!db) {
-        await client.connect();
-        db = client.db('sample_mflix');
-        console.log("✅ Connected to MongoDB");
+        try {
+            await client.connect();
+            db = client.db('sample_mflix');
+            console.log("✅ Connected to MongoDB");
+        } catch (error) {
+            console.error("❌ MongoDB Connection Error:", error);
+            process.exit(1);
+        }
     }
-
     return db;
 }
 

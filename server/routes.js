@@ -12,6 +12,7 @@ const {
 const router = express.Router();
 router.use(cookieParser());
 
+// register
 router.post('/register', async (req, res) => {
   const db = await connectDB();
   const { username, email, password } = req.body;
@@ -24,6 +25,7 @@ router.post('/register', async (req, res) => {
   res.status(201).json({ message: 'User created' });
 });
 
+// login
 router.post('/login', async (req, res) => {
   const db = await connectDB();
   const { email, password } = req.body;
@@ -40,21 +42,24 @@ router.post('/login', async (req, res) => {
   res.json({ accessToken });
 });
 
+// get users
 router.get('/users', authenticateToken, async (req, res) => {
-    try {
-        const users = await db.collection('users')
-            .find({
-                email: { $in: ['user1@gmail.com', 'user2@gmail.com'] }
-            })
-            .limit(2)
-            .toArray();
+  try {
+    const db = await connectDB();
+    const users = await db.collection('users')
+      .find({
+        email: { $in: ['user1@gmail.com', 'user2@gmail.com'] }
+      })
+      .limit(2)
+      .toArray();
 
-        res.json(users);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch users! Details:' + error });
-    }
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch users! Details:' + error });
+  }
 });
 
+// refresh token
 router.post('/refresh', async (req, res) => {
   const token = req.cookies.refreshToken;
   if (!token) return res.status(401).json({ error: 'No refresh token' });
@@ -66,6 +71,7 @@ router.post('/refresh', async (req, res) => {
   res.json({ accessToken: newAccessToken });
 });
 
+// protected route
 router.get('/chat', authenticateToken, (req, res) => {
   res.json({ message: `Welcome ${req.user.username}! This is the chat room.` });
 });
