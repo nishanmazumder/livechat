@@ -20,14 +20,13 @@ function RegisterForm() {
 
       const data = await response.json();
 
-      if (!response.ok) {
+      if (response.ok) {
+        login(data.authToken);
+        console.log('Register successful!');
+        redirectTo('/chat');
+      } else {
         throw new Error(data.error || 'Registerd failed!');
       }
-
-      login(data.authToken);
-
-      console.log('Register successful!');
-      redirectTo('/');
     } catch (err) {
       alert(`Register failed: ${err.message}`);
     }

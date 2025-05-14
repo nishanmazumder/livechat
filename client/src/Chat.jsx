@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import MessageList from './MessageList';
-import MessageInput from './MessageInput';
+import { useState } from 'react';
+import MessageList from './components/MessageList';
+import MessageInput from './components/MessageInput';
 
 function Chat() {
   const [messages, setMessages] = useState([

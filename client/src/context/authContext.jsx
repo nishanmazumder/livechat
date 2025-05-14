@@ -1,5 +1,7 @@
 import { useState, createContext } from 'react';
 import { parseJwt } from '../utils/jwtParser';
+import { getAuthToken } from '../utils/auth';
+import { useEffect } from 'react';
 
 const AuthContext = createContext();
 
@@ -7,6 +9,20 @@ export function AuthProvider({ children }) {
   const [username, setUsername] = useState(
     localStorage.getItem('username') || ''
   );
+
+  useEffect(() => {
+    const getAuthTokenInt = setInterval(
+      () => {
+        if (!getAuthToken()) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('username');
+          setUsername('');
+        }
+      },
+      2 * 60 * 1000 // 2 min
+    );
+    return () => clearInterval(getAuthTokenInt);
+  }, []);
 
   function login(token) {
     if (!token) return;

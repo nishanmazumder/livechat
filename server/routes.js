@@ -64,8 +64,8 @@ router.post('/refresh', async (req, res) => {
   const token = req.cookies.refreshToken;
   if (!token) return res.status(401).json({ error: 'No refresh token' });
 
-  const user = verifyRefreshToken(token);
-  if (!user) return res.status(403).json({ error: 'Invalid refresh token' });
+  const verify = verifyRefreshToken(token);
+  if (!verify) return res.status(403).json({ error: 'Invalid refresh token' });
 
   const newAccessToken = generateAccessToken(user);
   res.json({ accessToken: newAccessToken });
@@ -74,6 +74,10 @@ router.post('/refresh', async (req, res) => {
 // protected route
 router.get('/chat', authenticateToken, (req, res) => {
   res.json({ message: `Welcome ${req.user.username}! This is the chat room.` });
+});
+
+router.get('/', (req, res) => {
+  return res.send('This is home!');
 });
 
 module.exports = router;

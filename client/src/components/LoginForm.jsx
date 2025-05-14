@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import AuthContext from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,16 +19,16 @@ function LoginForm() {
 
       const data = await response.json();
 
-      if (!response.ok) {
+      if (response.ok) {
+        console.log(data?.accessToken);
+        login(data?.accessToken);
+        console.log('Login successful!');
+        redirectTo('/chat');
+      } else {
         throw new Error(data.error || 'Login failed!');
       }
-
-      login(data.authToken);
-
-      console.log('Login successful!');
-      redirectTo('/');
     } catch (err) {
-      alert(`Login failed: ${err.message}`);
+      alert(`Login API fetch failed: ${err.message}`);
     }
   };
 
