@@ -6,14 +6,18 @@ const SECRET_KEY = process.env.SECRET_KEY || 'live123';
 const REFRESH_SECRET_KEY = process.env.REFRESH_SECRET_KEY || 'liverefresh123';
 const refreshTokens = new Set();
 
+setInterval(()=>{
+    console.log(refreshTokens);
+}, 1000);
+
 function generateAccessToken(user) {
     // return jwt.sign({ username: user.name, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
-    return jwt.sign({ username: user.name, email: user.email }, SECRET_KEY, { expiresIn: '1m' });
+    return jwt.sign({ username: user.name, email: user.email }, SECRET_KEY, { expiresIn: '30s' });
 }
 
 function generateRefreshToken(user) {
     // const token = jwt.sign({ username: user.name, email: user.email }, REFRESH_SECRET_KEY, { expiresIn: '7d' });
-    const token = jwt.sign({ username: user.name, email: user.email }, REFRESH_SECRET_KEY, { expiresIn: '2m' });
+    const token = jwt.sign({ username: user.name, email: user.email }, REFRESH_SECRET_KEY, { expiresIn: '1m' });
     refreshTokens.add(token);
     return token;
 }

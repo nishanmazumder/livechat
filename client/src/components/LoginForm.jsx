@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import AuthContext from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
+import { setAuthToken } from '../utils/auth';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -20,10 +21,12 @@ function LoginForm() {
       const data = await response.json();
 
       if (response.ok) {
-        console.log(data?.accessToken);
-        login(data?.accessToken);
-        console.log('Login successful!');
-        redirectTo('/chat');
+        // console.log(data?.accessToken);
+
+        if (setAuthToken(data?.accessToken)) {
+          console.log('Login successful!');
+          return redirectTo('/chat');
+        }
       } else {
         throw new Error(data.error || 'Login failed!');
       }

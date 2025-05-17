@@ -13,7 +13,8 @@ export const refreshToken = async () => {
     const data = await res.json();
 
     if (res.ok) {
-      setAuthToken(data);
+      console.log(data?.authToken);
+      setAuthToken(data?.authToken);
       return true;
     }
 

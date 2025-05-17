@@ -11,17 +11,17 @@ export function AuthProvider({ children }) {
   );
 
   useEffect(() => {
-    const getAuthTokenInt = setInterval(
-      () => {
-        if (!getAuthToken()) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('username');
-          setUsername('');
-        }
-      },
-      2 * 60 * 1000 // 2 min
-    );
-    return () => clearInterval(getAuthTokenInt);
+    // const getAuthTokenInt = setInterval(
+    //   () => {
+    //     if (!getAuthToken()) {
+    //       localStorage.removeItem('token');
+    //       localStorage.removeItem('username');
+    //       setUsername('');
+    //     }
+    //   },
+    //   2 * 60 * 1000 // 2 min
+    // );
+    // return () => clearInterval(getAuthTokenInt);
   }, []);
 
   function login(token) {
@@ -32,7 +32,11 @@ export function AuthProvider({ children }) {
       localStorage.setItem('token', token);
       localStorage.setItem('username', decode.username);
       setUsername(decode.username);
+
+      return true;
     }
+
+    return false;
   }
 
   function logout() {

@@ -57,17 +57,20 @@ function App() {
   useEffect(() => {
     refreshToken();
 
-    console.log(getAuthToken());
-
     // const testInt = setInterval(() => {
-    //   console.log('test');
+    //   console.log('GetTokenAPP:', getAuthToken());
     // }, 1000);
 
     // return () => clearInterval(testInt);
 
     // const interval = setInterval(refreshToken, 15 * 60 * 1000); // every 15min
-    const interval = setInterval(refreshToken, 2 * 60 * 1000); // every 15min
+    const interval = setInterval(refreshToken, 2 * 60 * 1000); // every 2min
     return () => clearInterval(interval);
+
+    // return () => {
+    //   clearInterval(testInt);
+    //   clearInterval(interval);
+    // };
   }, []);
 
   return (
