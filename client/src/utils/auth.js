@@ -3,6 +3,10 @@ let authToken = null;
 export const getAuthToken = () => authToken;
 export const setAuthToken = (token) => (authToken = token);
 
+// export const fetchAuthToken = async () => {
+
+// }
+
 export const refreshToken = async () => {
   try {
     const res = await fetch('http://localhost:3000/refresh', {
@@ -15,6 +19,8 @@ export const refreshToken = async () => {
     if (res.ok) {
       console.log(data?.authToken);
       setAuthToken(data?.authToken);
+      console.log(data?.authToken);
+      localStorage.setItem('token', data?.accessToken);
       return true;
     }
 

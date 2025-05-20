@@ -68,6 +68,10 @@ router.post('/refresh', async (req, res) => {
   if (!verify) return res.status(403).json({ error: 'Invalid refresh token' });
 
   const newAccessToken = generateAccessToken(user);
+
+  console.log(token);
+  console.log(newAccessToken);
+
   res.json({ accessToken: newAccessToken });
 });
 

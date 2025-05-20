@@ -54,24 +54,28 @@ function Menu() {
 function App() {
   const [notice, setNotice] = useState(false);
 
-  useEffect(() => {
-    refreshToken();
+  // useEffect(() => {
+  //   console.log(getAuthToken());
+  // }, []);
 
-    // const testInt = setInterval(() => {
-    //   console.log('GetTokenAPP:', getAuthToken());
-    // }, 1000);
+  // useEffect(() => {
+  //   refreshToken();
 
-    // return () => clearInterval(testInt);
+  //   // const testInt = setInterval(() => {
+  //   //   console.log('GetTokenAPP:', getAuthToken());
+  //   // }, 1000);
 
-    // const interval = setInterval(refreshToken, 15 * 60 * 1000); // every 15min
-    const interval = setInterval(refreshToken, 2 * 60 * 1000); // every 2min
-    return () => clearInterval(interval);
+  //   // return () => clearInterval(testInt);
 
-    // return () => {
-    //   clearInterval(testInt);
-    //   clearInterval(interval);
-    // };
-  }, []);
+  //   // const interval = setInterval(refreshToken, 15 * 60 * 1000); // every 15min
+  //   const interval = setInterval(refreshToken, 2 * 60 * 1000); // every 2min
+  //   return () => clearInterval(interval);
+
+  //   // return () => {
+  //   //   clearInterval(testInt);
+  //   //   clearInterval(interval);
+  //   // };
+  // }, []);
 
   return (
     <AuthProvider>

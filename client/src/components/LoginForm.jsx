@@ -22,11 +22,9 @@ function LoginForm() {
 
       if (response.ok) {
         // console.log(data?.accessToken);
-
-        if (setAuthToken(data?.accessToken)) {
-          console.log('Login successful!');
-          return redirectTo('/chat');
-        }
+        login(data);
+        console.log('Login successful!');
+        return redirectTo('/chat');
       } else {
         throw new Error(data.error || 'Login failed!');
       }
