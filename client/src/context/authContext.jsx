@@ -1,6 +1,6 @@
 import { useState, createContext } from 'react';
 import { parseJwt } from '../utils/jwtParser';
-import { getAuthToken, refreshToken, setAuthToken } from '../utils/auth';
+import { getAuthToken, refreshToken, setAuthToken } from '../utils/api';
 import { useEffect } from 'react';
 
 const AuthContext = createContext();

@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import AuthContext from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
-import { setAuthToken } from '../utils/auth';
+import { setAuthToken } from '../utils/api';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
