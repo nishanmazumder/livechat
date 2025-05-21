@@ -2,10 +2,12 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./db');
+const jwt = require('jsonwebtoken');
+
 const {
   generateAccessToken,
   generateRefreshToken,
-  verifyRefreshToken,
+  refreshTokens,
   authenticateToken
 } = require('./auth');
 
@@ -38,9 +40,25 @@ router.post('/login', async (req, res) => {
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
-  res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'Strict' });
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'Strict'
+  });
   res.json({ accessToken });
 });
+
+//logout
+router.post('/logout', (req, res) => {
+  const token = req.cookies.refreshToken;
+
+  if (!refreshTokens.has(token))
+    refreshTokens.delete(token);
+
+  res.clearCookie('refreshToken');
+  res.sendStatus(204);
+
+})
 
 // get users
 router.get('/users', authenticateToken, async (req, res) => {
@@ -64,15 +82,17 @@ router.post('/refresh', async (req, res) => {
   const token = req.cookies.refreshToken;
   if (!token) return res.status(401).json({ error: 'No refresh token' });
 
-  const verify = verifyRefreshToken(token);
-  if (!verify) return res.status(403).json({ error: 'Invalid refresh token' });
+  if (!refreshTokens.has(token))
+    return res.status(403).json({ error: 'Invalid refresh token' });
 
-  const newAccessToken = generateAccessToken(user);
+  jwt.verify(token, process.env.REFRESH_SECRET_KEY, (err, decoded) => {
+    if (err) return res.status(403).json({
+      error: 'Refresh token expired, please log in again'
+    });
 
-  console.log(token);
-  console.log(newAccessToken);
-
-  res.json({ accessToken: newAccessToken });
+    const newAccessToken = generateAccessToken(decoded.username);
+    res.json({ accessToken: newAccessToken });
+  })
 });
 
 // protected route

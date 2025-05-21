@@ -18,15 +18,6 @@ function generateRefreshToken(user) {
     return token;
 }
 
-function verifyRefreshToken(token) {
-    if (!refreshTokens.has(token)) return null;
-    try {
-        return jwt.verify(token, REFRESH_SECRET_KEY);
-    } catch {
-        return null;
-    }
-}
-
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader?.split(' ')[1];
@@ -42,6 +33,6 @@ function authenticateToken(req, res, next) {
 module.exports = {
     generateAccessToken,
     generateRefreshToken,
-    verifyRefreshToken,
+    refreshTokens,
     authenticateToken
 };
