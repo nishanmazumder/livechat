@@ -30,9 +30,9 @@ router.post('/register', async (req, res) => {
 // login
 router.post('/login', async (req, res) => {
   const db = await connectDB();
-  const { email, password } = req.body;
-
+  const { email, password } = req.body?.crendential;
   const user = await db.collection('users').findOne({ email });
+  
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
@@ -45,6 +45,7 @@ router.post('/login', async (req, res) => {
     secure: true,
     sameSite: 'Strict'
   });
+
   res.json({ accessToken });
 });
 
@@ -57,7 +58,6 @@ router.post('/logout', (req, res) => {
 
   res.clearCookie('refreshToken');
   res.sendStatus(204);
-
 })
 
 // get users

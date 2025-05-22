@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import LoginForm from './components/LoginForm';
@@ -6,24 +6,17 @@ import Chat from './Chat';
 import './App.css';
 import AuthContext, { AuthProvider } from './context/authContext';
 import RegisterForm from './components/RegisterForm';
-import { getAuthToken, refreshToken } from './utils/auth';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './Home';
 
-function Menu() {
+const Menu = () => {
   const { username, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (!getAuthToken()) {
-  //     handleLogout();
-  //   }
-  // }, []);
-
-  function handleLogout() {
+  const handleLogout = () => {
     logout();
     navigate('/login');
-  }
+  };
 
   return (
     <nav className='menu'>
@@ -49,33 +42,10 @@ function Menu() {
       </ul>
     </nav>
   );
-}
+};
 
 function App() {
   const [notice, setNotice] = useState(false);
-
-  // useEffect(() => {
-  //   console.log(getAuthToken());
-  // }, []);
-
-  // useEffect(() => {
-  //   refreshToken();
-
-  //   // const testInt = setInterval(() => {
-  //   //   console.log('GetTokenAPP:', getAuthToken());
-  //   // }, 1000);
-
-  //   // return () => clearInterval(testInt);
-
-  //   // const interval = setInterval(refreshToken, 15 * 60 * 1000); // every 15min
-  //   const interval = setInterval(refreshToken, 2 * 60 * 1000); // every 2min
-  //   return () => clearInterval(interval);
-
-  //   // return () => {
-  //   //   clearInterval(testInt);
-  //   //   clearInterval(interval);
-  //   // };
-  // }, []);
 
   return (
     <AuthProvider>

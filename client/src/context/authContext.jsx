@@ -1,73 +1,53 @@
-import { useState, createContext } from 'react';
+import { useState, createContext, useEffect } from 'react';
 import { parseJwt } from '../utils/jwtParser';
-import { getAuthToken, refreshToken, setAuthToken } from '../utils/api';
-import { useEffect } from 'react';
+import API, { refreshAccessToken } from '../utils/api';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [username, setUsername] = useState(
-    localStorage.getItem('username') || ''
-  );
-  const [loginStatus, setLoginStatus] = useState(false);
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
-    //   refreshToken();
-
-    //   // if (!getAuthToken()) {
-    //   //   console.log('Log out!');
-    //   //   // logout();
-    //   // }
-
-    //   // console.log(loginStatus);
-
-    // const authInterval = setInterval(login(getAuthToken()), 1 * 30 * 1000); // every 30s
-
-    const refreshInterval = setInterval(refreshToken, 1 * 45 * 1000); // every 45s
-
-    return () => {
-      // clearInterval(authInterval);
-      clearInterval(refreshInterval);
+    const checkToken = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        if (token) await refreshAccessToken();
+      } catch (error) {
+        logout();
+        throw new Error(error);
+      }
     };
 
-    //   //   // const getAuthTokenInt = setInterval(
-    //   //   //   () => {
-    //   //   //     if (!getAuthToken()) {
-    //   //   //       localStorage.removeItem('token');
-    //   //   //       localStorage.removeItem('username');
-    //   //   //       setUsername('');
-    //   //   //     }
-    //   //   //   },
-    //   //   //   2 * 60 * 1000 // 2 min
-    //   //   // );
-    //   //   // return () => clearInterval(getAuthTokenInt);
+    checkToken();
+    // const interval = setInterval(checkToken, 30000);
+    // return () => clearInterval(interval);
   }, []);
 
-  function login(token) {
-    if (!token) return;
+  const login = async (crendential) => {
+    return await API.post('/login', { crendential })
+      .then((response) => {
+        localStorage.setItem('accessToken', response.data?.accessToken);
+        const decode = parseJwt(response.data?.accessToken);
+        setUsername(decode?.username);
+        return true;
+      })
+      .catch((error) => {
+        throw new Error(error);
+      });
+  };
 
-    setAuthToken(token?.accessToken);
-
-    const decode = parseJwt(token?.accessToken);
-
-    if (decode && decode.username) {
-      localStorage.setItem('token', token?.accessToken);
-      // localStorage.setItem('username', decode.username);
-      setUsername(decode.username);
-      setLoginStatus(true);
-      return true;
-    }
-
-    return false;
-  }
-
-  function logout() {
-    localStorage.removeItem('token');
-    // localStorage.removeItem('username');
-    setUsername('');
-    setLoginStatus(false);
-    setAuthToken(null);
-  }
+  const logout = async () => {
+    await API.post('/logout')
+      .then((response) => {
+        if (204 === response.status) {
+          localStorage.removeItem('accessToken');
+          setUsername('');
+        }
+      })
+      .catch((error) => {
+        throw new Error(error);
+      });
+  };
 
   return (
     <AuthContext.Provider value={{ username, login, logout }}>

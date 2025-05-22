@@ -1,7 +1,6 @@
 import { useState, useContext } from 'react';
 import AuthContext from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
-import { setAuthToken } from '../utils/api';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -11,26 +10,8 @@ function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch('http://localhost:3000/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // console.log(data?.accessToken);
-        login(data);
-        console.log('Login successful!');
-        return redirectTo('/chat');
-      } else {
-        throw new Error(data.error || 'Login failed!');
-      }
-    } catch (err) {
-      alert(`Login API fetch failed: ${err.message}`);
-    }
+    const response = await login({ email, password });
+    if (response) return redirectTo('/chat');
   };
 
   return (
