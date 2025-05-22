@@ -7,13 +7,11 @@ const REFRESH_SECRET_KEY = process.env.REFRESH_SECRET_KEY || 'liverefresh123';
 const refreshTokens = new Set();
 
 function generateAccessToken(user) {
-    // return jwt.sign({ username: user.name, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
-    return jwt.sign({ username: user.name, email: user.email }, SECRET_KEY, { expiresIn: '30s' });
+    return jwt.sign({ username: user.name, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
 }
 
 function generateRefreshToken(user) {
-    // const token = jwt.sign({ username: user.name, email: user.email }, REFRESH_SECRET_KEY, { expiresIn: '7d' });
-    const token = jwt.sign({ username: user.name, email: user.email }, REFRESH_SECRET_KEY, { expiresIn: '45s' });
+    const token = jwt.sign({ username: user.name, email: user.email }, REFRESH_SECRET_KEY, { expiresIn: '7d' });
     refreshTokens.add(token);
     return token;
 }
