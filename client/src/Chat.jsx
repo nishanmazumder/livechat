@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
 import MessageList from './components/MessageList';
 import MessageInput from './components/MessageInput';
 
@@ -7,13 +8,23 @@ function Chat() {
     { id: 1, text: 'Welcome to the chat!', sender: 'system' },
   ]);
 
+  const socket = io('http://localhost:3000');
+
+  useEffect(() => {
+    socket.on('receive_message', (msg) => {
+      setMessages((prvMsg) => [...prvMsg, msg]);
+    });
+
+    return () => socket.off('receive_message');
+  }, []);
+
   const handleSend = (messageText) => {
     const newMessage = {
-      id: messages.length + 1,
+      userId: 1,
       text: messageText,
-      sender: 'user',
     };
-    setMessages([...messages, newMessage]);
+
+    socket.emit('send_message', newMessage);
   };
 
   return (

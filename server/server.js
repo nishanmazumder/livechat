@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const routes = require('./routes');
 const { Server } = require('socket.io');
+const connectDB = require('./db');
 
 dotenv.config();
 
@@ -11,7 +12,10 @@ const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 app.use('/', routes);
 
@@ -19,6 +23,7 @@ app.use('/', routes);
 const io = new Server(server, {
   cors: {
     origin: 'http://localhost:5173', // 3000
+    methods: ['GET', 'POST'],
     credentials: true
   }
 });
@@ -28,6 +33,11 @@ io.on('connection', (socket) => {
 
   socket.on('send_message', async (messageData) => {
     // Save message to MongoDB
+    const db = await connectDB();
+
+
+    console.log(messageData);
+
     await db.collection('messages').insertOne(messageData);
 
     // Broadcast to all connected clients
@@ -41,5 +51,5 @@ io.on('connection', (socket) => {
 
 
 server.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
