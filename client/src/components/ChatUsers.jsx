@@ -24,7 +24,10 @@ const ChatUsers = ({ setUser, selectedUser }) => {
   return (
     <ul className='chat-users'>
       {users.map((user) => (
-        <li key={user._id} className={user._id === selectedUser && 'active'}>
+        <li
+          key={user._id}
+          className={user._id === selectedUser ? 'active' : ''}
+        >
           <a href='#!' onClick={() => setUser(user._id)}>
             {user.name}
           </a>

@@ -17,8 +17,16 @@ function Chat() {
       setMessages((prvMsg) => [...prvMsg, msg]);
     });
 
-    return () => socket.off('receive_message');
-  }, [socket]);
+    socket.on('user_messages', (msg) => {
+      console.log('use effect user_message');
+      setMessages(msg);
+    });
+
+    return () => {
+      socket.off('receive_message');
+      socket.off('user_messages');
+    };
+  }, []);
 
   const handleSend = (messageText) => {
     const newMessage = {
@@ -30,9 +38,16 @@ function Chat() {
     socket.emit('send_message', newMessage);
   };
 
+  const handleSelectedUser = (id) => {
+    console.log(id);
+
+    setUser(id);
+    socket.on('load_messages', id);
+  };
+
   return (
     <div className='chat-container'>
-      <ChatUsers setUser={(id) => setUser(id)} selectedUser={user} />
+      <ChatUsers setUser={handleSelectedUser} selectedUser={user} />
       {user && <MessageList messages={messages} />}
       {user && <MessageInput onSend={handleSend} />}
     </div>

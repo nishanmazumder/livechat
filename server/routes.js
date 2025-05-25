@@ -32,7 +32,7 @@ router.post('/login', async (req, res) => {
   const db = await connectDB();
   const { email, password } = req.body?.crendential;
   const user = await db.collection('users').findOne({ email });
-  
+
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
@@ -66,9 +66,9 @@ router.get('/users', authenticateToken, async (req, res) => {
     const db = await connectDB();
     const users = await db.collection('users')
       .find({
-        email: { $in: ['user1@gmail.com', 'user2@gmail.com'] }
+        email: { $in: ['user1@gmail.com', 'user2@gmail.com', 'user3@gmail.com'] }
       })
-      .limit(2)
+      .limit(3)
       .toArray();
 
     res.json(users);
@@ -98,6 +98,48 @@ router.post('/refresh', async (req, res) => {
 // protected route
 router.get('/chat', authenticateToken, (req, res) => {
   res.json({ message: `Welcome ${req.user.username}! This is the chat room.` });
+});
+
+router.get('/action', async (req, res) => {
+  try {
+    const db = await connectDB();
+    const collection = db.collection('messages');
+
+    await collection.createIndex({ reveiverId: 1 });
+
+    // await db.collection('users').deleteMany({});
+    // await db.collection('messages').deleteMany({});
+
+    // const messages = [
+    //     {
+    //         userId: 'user001',
+    //         message: 'Hey, how are you?',
+    //         time: new Date() // current time
+    //     },
+    //     {
+    //         userId: 'user002',
+    //         message: 'I\'m good, thanks!',
+    //         time: new Date()
+    //     },
+    //     {
+    //         userId: 'user001',
+    //         message: 'Want to catch up later?',
+    //         time: new Date()
+    //     },
+    //     {
+    //         userId: 'user003',
+    //         message: 'Sure, let me know what time.',
+    //         time: new Date()
+    //     },
+    // ];
+
+    // await collection.insertMany(messages);
+
+    res.sendStatus(204);
+
+  } catch (error) {
+    res.status(500).json({ error: 'Action Failed! ' + error });
+  }
 });
 
 router.get('/', (req, res) => {

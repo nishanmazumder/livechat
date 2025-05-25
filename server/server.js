@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const routes = require('./routes');
 const { Server } = require('socket.io');
 const connectDB = require('./db');
+const { ObjectId } = require('mongodb');
 
 dotenv.config();
 
@@ -22,26 +23,41 @@ app.use('/', routes);
 // Socket
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', // 3000
+    // origin: 'http://localhost:5173', // 3000
+    origin: '*',
     methods: ['GET', 'POST'],
     credentials: true
   }
 });
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   console.log('🟢 New client connected');
+
+  const db = await connectDB();
 
   socket.on('send_message', async (messageData) => {
     // Save message to MongoDB
-    const db = await connectDB();
 
+    const convertMsgData = {
+      ...messageData,
+      userId: new ObjectId(String(messageData.userId))
+    }
 
-    console.log(messageData);
-
-    await db.collection('messages').insertOne(messageData);
+    await db.collection('messages').insertOne(convertMsgData);
 
     // Broadcast to all connected clients
     io.emit('receive_message', messageData);
+  });
+
+
+  socket.on('load_messages', async (id) => {
+    const messages = await db.collection('messages').find({ userId: new ObjectId(String(id)) }).toArray();
+
+    // console.log(id);
+    // console.log(messages);
+    // console.log('message found!');
+
+    socket.emit('user_messages', messages);
   });
 
   socket.on('disconnect', () => {
