@@ -20,6 +20,37 @@ body {
   height: 300px;
 }
 
+.chat-users {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+.chat-users li {
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.5s;
+  cursor: pointer;
+}
+.chat-users li.active {
+  background-color: red;
+  color: white;
+}
+.chat-users li a {
+  color: #070707;
+  text-decoration: none;
+}
+.chat-users li div {
+  height: 10px;
+  width: 10px;
+  background: greenyellow;
+  border-radius: 100%;
+}
+.chat-users li:hover {
+  transform: scale(1.1);
+}
+
 .message-list {
   flex: 1;
   overflow-y: auto;
@@ -32,12 +63,19 @@ body {
   border-radius: 4px;
   max-width: 70%;
 }
-
+.message small:first-child {
+  color: red;
+}
+.message small:last-child {
+  color: green;
+}
+.message p {
+  color: violet;
+}
 .message.user {
   background-color: #dcf8c6;
   align-self: flex-end;
 }
-
 .message.system {
   background-color: #eee;
   align-self: flex-start;
@@ -46,14 +84,12 @@ body {
 .message-input {
   display: flex;
 }
-
 .message-input input {
   flex: 1;
   padding: 10px;
   font-size: 16px;
 }
-
 .message-input button {
   padding: 10px 20px;
   font-size: 16px;
-}
+}/*# sourceMappingURL=index.css.map */
