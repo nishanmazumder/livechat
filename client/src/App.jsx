@@ -10,7 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './Home';
 
 const Menu = () => {
-  const { username, logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -33,8 +33,8 @@ const Menu = () => {
         <li>
           <Link to='/register'>Register</Link>
         </li>
-        {username && <li className='username'>👤 {username}</li>}
-        {username && (
+        {user.username && <li className='username'>👤 {user.username}</li>}
+        {user.id && (
           <li className='username'>
             <button onClick={handleLogout}>Logout</button>
           </li>
@@ -50,7 +50,7 @@ function App() {
   return (
     <AuthProvider>
       <div className='App'>
-        <h1>bti Healthy Harvest WhatsApp Message</h1>
+        <h1>bti Healthy Harvest</h1>
         {notice && (
           <span color='red'>
             You are not eligible to see this page. Please login.

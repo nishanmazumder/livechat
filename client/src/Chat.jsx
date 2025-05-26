@@ -3,34 +3,45 @@ import { io } from 'socket.io-client';
 import MessageList from './components/MessageList';
 import MessageInput from './components/MessageInput';
 import ChatUsers from './components/ChatUsers';
+import { useContext } from 'react';
+import AuthContext from './context/authContext';
 
 function Chat() {
-  const [user, setUser] = useState(null);
+  const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState([
-    { _id: 1, userId: 1, message: 'Welcome to the chat!', time: new Date() },
+    {
+      senderId: 1,
+      receiverId: 1,
+      message: 'Welcome to the chat!',
+      time: new Date(),
+    },
   ]);
+  const { user } = useContext(AuthContext);
 
   const socket = io('http://localhost:3000'); // 5173
 
   useEffect(() => {
     socket.on('receive_message', (msg) => {
+      console.log(msg);
+
       setMessages((prvMsg) => [...prvMsg, msg]);
     });
 
-    socket.on('user_messages', (msg) => {
-      console.log('use effect user_message');
-      setMessages(msg);
-    });
+    // socket.on('user_messages', (msg) => {
+    //   // console.log('use effect user_message');
+    //   setMessages(msg);
+    // });
 
     return () => {
       socket.off('receive_message');
-      socket.off('user_messages');
+      // socket.off('user_messages');
     };
   }, []);
 
   const handleSend = (messageText) => {
     const newMessage = {
-      userId: user,
+      senderId: user?.id,
+      receiverId: receiver,
       message: messageText,
       time: new Date(),
     };
@@ -39,17 +50,17 @@ function Chat() {
   };
 
   const handleSelectedUser = (id) => {
-    console.log(id);
+    // console.log(id);
 
-    setUser(id);
-    socket.on('load_messages', id);
+    setReceiver(id);
+    // socket.on('load_messages', id);
   };
 
   return (
     <div className='chat-container'>
-      <ChatUsers setUser={handleSelectedUser} selectedUser={user} />
-      {user && <MessageList messages={messages} />}
-      {user && <MessageInput onSend={handleSend} />}
+      <ChatUsers setReceiver={handleSelectedUser} selectedReceiver={receiver} />
+      {receiver && <MessageList messages={messages} />}
+      {receiver && <MessageInput onSend={handleSend} />}
     </div>
   );
 }

@@ -36,29 +36,29 @@ io.on('connection', async (socket) => {
   const db = await connectDB();
 
   socket.on('send_message', async (messageData) => {
-    // Save message to MongoDB
 
     const convertMsgData = {
       ...messageData,
-      userId: new ObjectId(String(messageData.userId))
+      senderId: new ObjectId(String(messageData.senderId)),
+      receiverId: new ObjectId(String(messageData.receiverId))
     }
 
-    await db.collection('messages').insertOne(convertMsgData);
+    await db.collection('message').insertOne(convertMsgData);
 
-    // Broadcast to all connected clients
-    io.emit('receive_message', messageData);
+    // send to receiver
+    socket.to(messageData.receiverId).emit('receive_message', messageData);
   });
 
 
-  socket.on('load_messages', async (id) => {
-    const messages = await db.collection('messages').find({ userId: new ObjectId(String(id)) }).toArray();
+  // socket.on('load_messages', async (id) => {
+  //   const messages = await db.collection('message').find({ userId: new ObjectId(String(id)) }).toArray();
 
-    // console.log(id);
-    // console.log(messages);
-    // console.log('message found!');
+  //   // console.log(id);
+  //   // console.log(messages);
+  //   // console.log('message found!');
 
-    socket.emit('user_messages', messages);
-  });
+  //   socket.emit('user_messages', messages);
+  // });
 
   socket.on('disconnect', () => {
     console.log('🔴 Client disconnected');

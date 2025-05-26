@@ -1,15 +1,22 @@
 import { useEffect } from 'react';
 import { useState } from 'react';
 import API from '../utils/api';
+import AuthContext from '../context/authContext';
+import { useContext } from 'react';
 
-const ChatUsers = ({ setUser, selectedUser }) => {
+const ChatUsers = ({ setReceiver, selectedReceiver }) => {
   const [users, setUsers] = useState([]);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const getUsers = async () => {
       return await API.get('/users')
         .then((response) => {
-          setUsers(response?.data);
+          const filteredUsers = response?.data.filter(
+            (getUser) => getUser._id !== user.id
+          );
+
+          setUsers(filteredUsers);
         })
         .catch((error) => {
           throw new Error(error);
@@ -26,10 +33,10 @@ const ChatUsers = ({ setUser, selectedUser }) => {
       {users.map((user) => (
         <li
           key={user._id}
-          className={user._id === selectedUser ? 'active' : ''}
+          className={user._id === selectedReceiver ? 'active' : ''}
         >
-          <a href='#!' onClick={() => setUser(user._id)}>
-            {user.name}
+          <a href='#!' onClick={() => setReceiver(user._id)}>
+            {user.username}
           </a>
           <div></div>
         </li>

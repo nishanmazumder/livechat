@@ -5,7 +5,7 @@ import API, { refreshAccessToken } from '../utils/api';
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [username, setUsername] = useState('');
+  const [user, setUser] = useState({});
 
   useEffect(() => {
     const checkToken = async () => {
@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
       .then((response) => {
         localStorage.setItem('accessToken', response.data?.accessToken);
         const decode = parseJwt(response.data?.accessToken);
-        setUsername(decode?.username);
+        setUser({ id: decode?.id, username: decode?.username });
         return true;
       })
       .catch((error) => {
@@ -41,7 +41,7 @@ export function AuthProvider({ children }) {
       .then((response) => {
         if (204 === response.status) {
           localStorage.removeItem('accessToken');
-          setUsername('');
+          setUser([]);
         }
       })
       .catch((error) => {
@@ -50,7 +50,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ username, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

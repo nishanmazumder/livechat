@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
   if (existing) return res.status(400).json({ error: 'User already exists!' });
 
   const hashPassword = await bcrypt.hash(password, 10);
-  await db.collection('users').insertOne({ name: username, email, password: hashPassword });
+  await db.collection('users').insertOne({ username, email, password: hashPassword });
   res.status(201).json({ message: 'User created' });
 });
 
@@ -103,37 +103,54 @@ router.get('/chat', authenticateToken, (req, res) => {
 router.get('/action', async (req, res) => {
   try {
     const db = await connectDB();
-    const collection = db.collection('messages');
+    const msgCollection = db.collection('message');
 
-    await collection.createIndex({ reveiverId: 1 });
+    // create index
+    // await collection.createIndex({ receiverId: 1 });
+    // await msgCollection.createIndex(
+    //   { senderId: 1, receiverId: 1, time: 1 },
+    //   { name: "sender_receiver_time" }
+    // );
 
+    // empty data
     // await db.collection('users').deleteMany({});
-    // await db.collection('messages').deleteMany({});
+    // await db.collection('message').deleteMany({});
 
+    // insert message data
     // const messages = [
-    //     {
-    //         userId: 'user001',
-    //         message: 'Hey, how are you?',
-    //         time: new Date() // current time
-    //     },
-    //     {
-    //         userId: 'user002',
-    //         message: 'I\'m good, thanks!',
-    //         time: new Date()
-    //     },
-    //     {
-    //         userId: 'user001',
-    //         message: 'Want to catch up later?',
-    //         time: new Date()
-    //     },
-    //     {
-    //         userId: 'user003',
-    //         message: 'Sure, let me know what time.',
-    //         time: new Date()
-    //     },
+    //   {
+    //     senderId: "u1",
+    //     receiverId: "u2",
+    //     message: "Hey!",
+    //     time: new Date()
+    //   },
+    //   {
+    //     senderId: "u2",
+    //     receiverId: "u1",
+    //     message: "Hello!",
+    //     time: new Date()
+    //   },
+    //   {
+    //     senderId: "u1",
+    //     receiverId: "u3",
+    //     message: "Hi u3",
+    //     time: new Date()
+    //   }
     // ];
 
-    // await collection.insertMany(messages);
+    // await msgCollection.insertMany(messages);
+
+    // retrive message data
+    // const messages = await msgCollection.find({
+    //   $or: [
+    //     { senderId: "u1", receiverId: "u2" },
+    //     { senderId: "u2", receiverId: "u1" }
+    //   ]
+    // })
+    //   .sort({ time: 1 }) // oldest to newest
+    //   .toArray();
+
+    // return res.status(200).json(messages);
 
     res.sendStatus(204);
 

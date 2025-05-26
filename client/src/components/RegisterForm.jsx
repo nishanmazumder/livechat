@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import AuthContext from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
+import API from '../utils/api';
 
 function RegisterForm() {
   const [username, setUsername] = useState('');
@@ -11,25 +12,16 @@ function RegisterForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch('http://localhost:3000/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }),
-      });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        login(data.authToken);
+    API.post('/register')
+      .then((response) => {
+        login(response?.data?.authToken);
         console.log('Register successful!');
         redirectTo('/chat');
-      } else {
-        throw new Error(data.error || 'Registerd failed!');
-      }
-    } catch (err) {
-      alert(`Register failed: ${err.message}`);
-    }
+      })
+      .catch((error) => {
+        throw new Error('Registerd failed! ', error);
+      });
   };
 
   return (
