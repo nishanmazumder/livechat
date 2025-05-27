@@ -7,6 +7,8 @@ import { useContext } from 'react';
 import AuthContext from './context/authContext';
 
 function Chat() {
+  // const socket = io('http://localhost:3000'); // 5173
+  const { socket, user } = useContext(AuthContext);
   const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState([
     {
@@ -16,11 +18,11 @@ function Chat() {
       time: new Date(),
     },
   ]);
-  const { user } = useContext(AuthContext);
-
-  const socket = io('http://localhost:3000'); // 5173
 
   useEffect(() => {
+    console.log('chat console!');
+    console.log(messages);
+
     socket.on('receive_message', (msg) => {
       console.log(msg);
 
@@ -36,23 +38,25 @@ function Chat() {
       socket.off('receive_message');
       // socket.off('user_messages');
     };
-  }, []);
+  }, [socket, messages]);
 
   const handleSend = (messageText) => {
     const newMessage = {
       senderId: user?.id,
       receiverId: receiver,
       message: messageText,
-      time: new Date(),
+      time: new Date().toISOString(),
     };
 
     socket.emit('send_message', newMessage);
+    setMessages((prev) => [...prev, newMessage]);
   };
 
   const handleSelectedUser = (id) => {
     // console.log(id);
 
     setReceiver(id);
+    // socket.emit('register', id);
     // socket.on('load_messages', id);
   };
 

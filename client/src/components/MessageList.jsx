@@ -8,18 +8,25 @@ const MessageList = ({ messages }) => {
     year: 'numeric',
   };
 
-  console.log(messages);
+  // const generateKey = (prefix = 'key') => {
+  //   return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  // };
+
+  // messages.map((message) => {
+  //   console.log(message.time);
+  // });
 
   return (
     <div className='message-list'>
-      {messages.map((message) => (
+      {messages.map((message, index) => (
         <div
-          key={'key_' + new Date(message.time).toISOString()}
-          className={`message ${message.userId}`}
+          key={`message_${index}`}
+          className={`message ${message.receiverId}`}
         >
-          <small>{message.userId}</small> /
+          <small>{message.receiverId}</small> /
           <small>
-            {new Date(message.time).toLocaleString('en-US', options)}
+            {message.time &&
+              new Date(message.time).toLocaleString('en-US', options)}
           </small>
           <p>{message.message}</p>
         </div>

@@ -1,10 +1,12 @@
 import { useState, createContext, useEffect } from 'react';
 import { parseJwt } from '../utils/jwtParser';
 import API, { refreshAccessToken } from '../utils/api';
+import { io } from 'socket.io-client';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  const socket = io('http://localhost:3000'); // 5173
   const [user, setUser] = useState({});
 
   useEffect(() => {
@@ -29,6 +31,7 @@ export function AuthProvider({ children }) {
         localStorage.setItem('accessToken', response.data?.accessToken);
         const decode = parseJwt(response.data?.accessToken);
         setUser({ id: decode?.id, username: decode?.username });
+        socket.emit('register', decode?.id);
         return true;
       })
       .catch((error) => {
@@ -50,7 +53,8 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    // <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, socket, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

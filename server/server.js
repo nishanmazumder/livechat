@@ -23,30 +23,43 @@ app.use('/', routes);
 // Socket
 const io = new Server(server, {
   cors: {
-    // origin: 'http://localhost:5173', // 3000
-    origin: '*',
+    origin: 'http://localhost:5173', // 3000
+    // origin: '*',
     methods: ['GET', 'POST'],
     credentials: true
   }
 });
 
+let users = {};
+
 io.on('connection', async (socket) => {
   console.log('🟢 New client connected');
 
-  const db = await connectDB();
+  socket.on('register', (userID) => {
+    users[userID] = socket.id;
+  })
 
   socket.on('send_message', async (messageData) => {
+    // send to receiver
+    const receiverId = users[messageData?.receiverId];
 
+    console.log(receiverId);
+
+    if (receiverId) {
+      io.to(receiverId).emit('receive_message', messageData);
+    } else {
+      console.log('Recipient not connected');
+    }
+
+    // insert msg to db
     const convertMsgData = {
       ...messageData,
       senderId: new ObjectId(String(messageData.senderId)),
       receiverId: new ObjectId(String(messageData.receiverId))
     }
-
+    const db = await connectDB();
     await db.collection('message').insertOne(convertMsgData);
 
-    // send to receiver
-    socket.to(messageData.receiverId).emit('receive_message', messageData);
   });
 
 
@@ -59,6 +72,8 @@ io.on('connection', async (socket) => {
 
   //   socket.emit('user_messages', messages);
   // });
+
+  console.log(users);
 
   socket.on('disconnect', () => {
     console.log('🔴 Client disconnected');
