@@ -23,8 +23,8 @@ app.use('/', routes);
 // Socket
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', // 3000
-    // origin: '*',
+    // origin: 'http://localhost:5173', // 3000
+    origin: '*',
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -39,28 +39,44 @@ io.on('connection', async (socket) => {
     users[userID] = socket.id;
   })
 
-  socket.on('send_message', async (messageData) => {
-    // send to receiver
-    const receiverId = users[messageData?.receiverId];
+  socket.on("private message", (anotherSocketId, messageData) => {
 
-    console.log(receiverId);
+    anotherSocketId = users[messageData?.receiverId];
 
-    if (receiverId) {
-      io.to(receiverId).emit('receive_message', messageData);
-    } else {
-      console.log('Recipient not connected');
-    }
+    console.log(anotherSocketId);
 
-    // insert msg to db
-    const convertMsgData = {
-      ...messageData,
-      senderId: new ObjectId(String(messageData.senderId)),
-      receiverId: new ObjectId(String(messageData.receiverId))
-    }
-    const db = await connectDB();
-    await db.collection('message').insertOne(convertMsgData);
-
+    socket.to(anotherSocketId).emit("private message", messageData);
   });
+
+  // socket.on('send_message', async (messageData) => {
+  //   // send to receiver
+  //   const receiverId = users[messageData?.receiverId];
+
+    
+  //   if (receiverId) {
+  //     console.log(receiverId);
+  //     console.log('receiver ID: ' + io.sockets.sockets.has(receiverId));
+  //     console.log(messageData);
+  //     // console.log(io.sockets.sockets);
+  //     // socket.broadcast.emit('receive_message', messageData);
+  //     socket.to(receiverId).emit('receive_message', messageData);
+  //     // setTimeout(()=>{
+  //     //   socket.to(receiverId).emit('receive_message', messageData);
+  //     // }, 5000)
+  //   } else {
+  //     console.log('Recipient not connected');
+  //   }
+
+  //   // insert msg to db
+  //   // const convertMsgData = {
+  //   //   ...messageData,
+  //   //   senderId: new ObjectId(String(messageData.senderId)),
+  //   //   receiverId: new ObjectId(String(messageData.receiverId))
+  //   // }
+  //   // const db = await connectDB();
+  //   // await db.collection('message').insertOne(convertMsgData);
+
+  // });
 
 
   // socket.on('load_messages', async (id) => {

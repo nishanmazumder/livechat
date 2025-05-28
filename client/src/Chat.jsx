@@ -23,7 +23,7 @@ function Chat() {
     console.log('chat console!');
     console.log(messages);
 
-    socket.on('receive_message', (msg) => {
+    socket.on('private message', (msg) => {
       console.log(msg);
 
       setMessages((prvMsg) => [...prvMsg, msg]);
@@ -35,7 +35,7 @@ function Chat() {
     // });
 
     return () => {
-      socket.off('receive_message');
+      socket.off('private message');
       // socket.off('user_messages');
     };
   }, [socket, messages]);
@@ -48,7 +48,7 @@ function Chat() {
       time: new Date().toISOString(),
     };
 
-    socket.emit('send_message', newMessage);
+    socket.emit('private message', '', newMessage);
     setMessages((prev) => [...prev, newMessage]);
   };
 
