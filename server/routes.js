@@ -103,7 +103,8 @@ router.get('/chat', authenticateToken, (req, res) => {
 router.get('/action', async (req, res) => {
   try {
     const db = await connectDB();
-    const msgCollection = db.collection('message');
+    const msgCollection = db.collection("message");
+    const userCollection = db.collection("users");
 
     // create index
     // await collection.createIndex({ receiverId: 1 });
@@ -115,6 +116,28 @@ router.get('/action', async (req, res) => {
     // empty data
     // await db.collection('users').deleteMany({});
     // await db.collection('message').deleteMany({});
+
+    // insert users
+    // const users = [
+    //   {
+    //     username: "user1",
+    //     email: "user1@gmail.com",
+    //     password:
+    //       "$2a$12$.i2JoTR7Xhzj6KOjAUWKC.o3WAM8K4zXaLLECLfQUSKSr8lVcVw.e",
+    //   },
+    //   {
+    //     username: "user2",
+    //     email: "user2@gmail.com",
+    //     password:
+    //       "$2a$12$GWTV8IRIfBfs5q4Fortul.94eJJB4ZtnwMcHXZSMu27Q6f9QhWoxa",
+    //   },
+    //   {
+    //     username: "user3",
+    //     email: "user3@gmail.com",
+    //     password:
+    //       "$2a$12$AUhs0WjAku76e.faJMvrs.r9kpbv31Zf9tTiR/IRO1rK0Gst70tDm",
+    //   },
+    // ];
 
     // insert message data
     // const messages = [
@@ -138,6 +161,7 @@ router.get('/action', async (req, res) => {
     //   }
     // ];
 
+    // await userCollection.insertMany(users);
     // await msgCollection.insertMany(messages);
 
     // retrive message data
@@ -153,7 +177,6 @@ router.get('/action', async (req, res) => {
     // return res.status(200).json(messages);
 
     res.sendStatus(204);
-
   } catch (error) {
     res.status(500).json({ error: 'Action Failed! ' + error });
   }

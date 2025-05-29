@@ -48,7 +48,7 @@ function Chat() {
       time: new Date().toISOString(),
     };
 
-    socket.emit('private message', '', newMessage);
+    socket.emit('private message', newMessage);
     setMessages((prev) => [...prev, newMessage]);
   };
 
