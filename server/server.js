@@ -25,8 +25,8 @@ app.use("/", routes);
 // Socket
 const io = new Server(server, {
   cors: {
-    // origin: 'http://localhost:5173', // 3000
-    origin: "*",
+    origin: 'http://localhost:5173', // 3000
+    // origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -34,8 +34,20 @@ const io = new Server(server, {
 
 let users = {};
 
-io.on("connection", async (socket) => {
+io.on("connection", (socket) => {
   console.log("🟢 New client connected");
+
+  // console.log(socket.id);
+
+  socket.on('message', ({id, msg})=>{
+    // console.log('data', data);
+
+    // socket.broadcast.emit('send', data)
+    socket.to(id).emit("send", msg);
+  })
+
+  // socket.broadcast.emit("welcome", `Hello User! ${socket.id}`);
+
 
   socket.on("register", (userID) => {
     users[userID] = socket.id;
@@ -95,10 +107,10 @@ io.on("connection", async (socket) => {
   //   socket.emit('user_messages', messages);
   // });
 
-  console.log(users);
+  // console.log(users);
 
   socket.on("disconnect", () => {
-    console.log("🔴 Client disconnected");
+    console.log("🔴 Client disconnected", socket.id);
   });
 });
 
