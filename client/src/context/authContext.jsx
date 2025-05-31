@@ -8,8 +8,15 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const socket = io('http://localhost:3000'); // 5173
   const [user, setUser] = useState({});
+  const [socketId, setSocketId] = useState('');
 
   useEffect(() => {
+    socket.on('connect', () => {
+      setSocketId(socket.id);
+      console.log('useEffect Authcontext', socket.id);
+    });
+
+    // console.log('useEffect Authcontext', socket.id);
     const checkToken = async () => {
       try {
         const token = localStorage.getItem('accessToken');
@@ -21,17 +28,43 @@ export function AuthProvider({ children }) {
     };
 
     checkToken();
+
+    // console.log(parseJwt(token));
+
+    // if (token) {
+    //   const decode = parseJwt(token);
+    //   const userData = {
+    //     id: decode?.id,
+    //     username: decode?.username,
+    //   };
+
+    //   console.log(decode);
+
+    //   setUser(userData);
+    // }
     // const interval = setInterval(checkToken, 30000);
     // return () => clearInterval(interval);
+
+    return () => socket.disconnect();
   }, []);
+
+  // console.log(activeUsers);
 
   const login = async (crendential) => {
     return await API.post('/login', { crendential })
       .then((response) => {
         localStorage.setItem('accessToken', response.data?.accessToken);
         const decode = parseJwt(response.data?.accessToken);
-        setUser({ id: decode?.id, username: decode?.username });
-        socket.emit('register', decode?.id);
+
+        const userData = {
+          id: decode?.id,
+          username: decode?.username,
+          socketId,
+        };
+
+        setUser(userData);
+        // console.log('login', socket.id);
+        socket.emit('login', userData);
         return true;
       })
       .catch((error) => {

@@ -60,8 +60,8 @@ function App() {
           <Menu />
 
           <Routes>
-            <Route path='/' element={<Home />} />
-            {/* <Route
+            {/* <Route path='/' element={<Home />} /> */}
+            <Route
               path='/chat'
               element={
                 <ProtectedRoute>
@@ -70,7 +70,7 @@ function App() {
               }
             />
             <Route path='/login' element={<LoginForm />} />
-            <Route path='/register' element={<RegisterForm />} /> */}
+            <Route path='/register' element={<RegisterForm />} />
           </Routes>
         </Router>
       </div>

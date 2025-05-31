@@ -11,6 +11,7 @@ export const refreshAccessToken = async () => {
     .then((response) => {
       const { accessToken } = response.data;
       localStorage.setItem('accessToken', accessToken);
+      console.log('test');
       return accessToken;
     })
     .catch((error) => {

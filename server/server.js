@@ -37,23 +37,29 @@ let users = {};
 io.on("connection", (socket) => {
   console.log("🟢 New client connected");
 
-  // console.log(socket.id);
+  console.log(socket.id);
 
-  socket.on('message', ({id, msg})=>{
-    // console.log('data', data);
+  // socket.on('message', ({id, msg})=>{
+  //   // console.log('data', data);
 
-    // socket.broadcast.emit('send', data)
-    socket.to(id).emit("send", msg);
-  })
+  //   // socket.broadcast.emit('send', data)
+  //   socket.to(id).emit("send", msg);
+  // })
 
   // socket.broadcast.emit("welcome", `Hello User! ${socket.id}`);
 
 
-  socket.on("register", (userID) => {
-    users[userID] = socket.id;
-    socket.join(users[userID]);
-  });
+  socket.on("login", (user) => {
+    users[user.id] = user;
+    // socket.join(users[userID]);
+    // users.push(user)
+    // const activeUsers = users.map(id => Object.keys(id));
 
+  });
+  
+  // if(users.length > 0){
+    socket.emit('active_users', Object.keys(users));
+  // }
   // console.log(socket.handshake.headers);
 
   // socket.on("private message", (messageData) => {
@@ -69,7 +75,7 @@ io.on("connection", (socket) => {
   //   });
   // }
 
-  socket.on("send_message", async (messageData) => {
+  socket.on("send_message", (messageData) => {
     // send to receiver
     const receiverId = users[messageData?.receiverId];
 
@@ -107,9 +113,14 @@ io.on("connection", (socket) => {
   //   socket.emit('user_messages', messages);
   // });
 
-  // console.log(users);
+  console.log(users);
 
   socket.on("disconnect", () => {
+    // users.filter(user => user.socketId !== socket.id);
+    const filteredUsers = Object.values(users).filter(user => user.socketId !== socket.id);
+    
+    console.log(filteredUsers);
+    
     console.log("🔴 Client disconnected", socket.id);
   });
 });

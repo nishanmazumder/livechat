@@ -52,9 +52,7 @@ const Home = () => {
         <button onClick={handleSend}>Send</button>
       </div>
 
-      <div>
-        {messages.map(msg => msg)}
-      </div>
+      <div>{messages.map((msg) => msg)}</div>
     </>
   );
 };

@@ -4,7 +4,7 @@ import API from '../utils/api';
 import AuthContext from '../context/authContext';
 import { useContext } from 'react';
 
-const ChatUsers = ({ setReceiver, selectedReceiver }) => {
+const ChatUsers = ({ setReceiver, selectedReceiver, activeUsers }) => {
   const [users, setUsers] = useState([]);
   const { user } = useContext(AuthContext);
 
@@ -17,6 +17,11 @@ const ChatUsers = ({ setReceiver, selectedReceiver }) => {
           );
 
           setUsers(filteredUsers);
+          // const isActive = filteredUsers.some((user) =>
+          //   activeUsers.includes(user._id)
+          // );
+
+          // console.log(isActive);
         })
         .catch((error) => {
           throw new Error(error);
@@ -25,6 +30,8 @@ const ChatUsers = ({ setReceiver, selectedReceiver }) => {
 
     getUsers();
   }, []);
+
+  console.log(activeUsers);
 
   // getting pw from users : ) lol
 
@@ -38,7 +45,7 @@ const ChatUsers = ({ setReceiver, selectedReceiver }) => {
           <a href='#!' onClick={() => setReceiver(user._id)}>
             {user.username}
           </a>
-          <div></div>
+          <div className='indicator'></div>
         </li>
       ))}
     </ul>
