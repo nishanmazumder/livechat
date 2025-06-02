@@ -51,7 +51,10 @@ router.post('/login', async (req, res) => {
 
 //logout
 router.post('/logout', (req, res) => {
+  const { userId } = req.body;
   const token = req.cookies.refreshToken;
+
+  // console.log('user logout', userId);
 
   if (!refreshTokens.has(token))
     refreshTokens.delete(token);

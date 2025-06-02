@@ -1,20 +1,26 @@
 import { useState, createContext, useEffect } from 'react';
 import { parseJwt } from '../utils/jwtParser';
 import API, { refreshAccessToken } from '../utils/api';
-import { io } from 'socket.io-client';
+import { useSocket } from '../utils/socket';
+// import { io } from 'socket.io-client';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const socket = io('http://localhost:3000'); // 5173
   const [user, setUser] = useState({});
   const [socketId, setSocketId] = useState('');
+  const socket = useSocket(user);
 
   useEffect(() => {
-    socket.on('connect', () => {
-      setSocketId(socket.id);
-      console.log('useEffect Authcontext', socket.id);
-    });
+    // socket.on('connect', () => {
+    //   setSocketId(socket.id);
+    //   console.log('useEffect Authcontext', socket.id);
+    // });
+
+    // socket.on('active_users', (activeUsersList) => {
+    //   // setActiveUsers(activeUsersList);
+    //   console.log(activeUsersList);
+    // });
 
     // console.log('useEffect Authcontext', socket.id);
     const checkToken = async () => {
@@ -45,7 +51,7 @@ export function AuthProvider({ children }) {
     // const interval = setInterval(checkToken, 30000);
     // return () => clearInterval(interval);
 
-    return () => socket.disconnect();
+    // return () => socket.disconnect();
   }, []);
 
   // console.log(activeUsers);
@@ -59,12 +65,13 @@ export function AuthProvider({ children }) {
         const userData = {
           id: decode?.id,
           username: decode?.username,
-          socketId,
+          // socketId,
         };
 
         setUser(userData);
+        // socket(userData);
         // console.log('login', socket.id);
-        socket.emit('login', userData);
+        // socket.emit('login', userData);
         return true;
       })
       .catch((error) => {
@@ -73,10 +80,11 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    await API.post('/logout')
+    await API.post('/logout', { userId: user.id })
       .then((response) => {
         if (204 === response.status) {
           localStorage.removeItem('accessToken');
+          // socket.emit('logout', user.id);
           setUser([]);
         }
       })

@@ -32,12 +32,18 @@ const io = new Server(server, {
   },
 });
 
-let users = {};
+let usersSocket = {};
 
 io.on("connection", (socket) => {
   console.log("🟢 New client connected");
 
-  console.log(socket.id);
+  const userId = socket.handshake.query.userId;
+
+  if(userId){
+    usersSocket[userId] = socket.id;
+  }
+
+  // console.log(users);
 
   // socket.on('message', ({id, msg})=>{
   //   // console.log('data', data);
@@ -49,16 +55,16 @@ io.on("connection", (socket) => {
   // socket.broadcast.emit("welcome", `Hello User! ${socket.id}`);
 
 
-  socket.on("login", (user) => {
-    users[user.id] = user;
-    // socket.join(users[userID]);
-    // users.push(user)
-    // const activeUsers = users.map(id => Object.keys(id));
+  // socket.on("login", (user) => {
+  //   users[user.id] = user;
+  //   // socket.join(users[userID]);
+  //   // users.push(user)
+  //   // const activeUsers = users.map(id => Object.keys(id));
 
-  });
+  // });
   
   // if(users.length > 0){
-    socket.emit('active_users', Object.keys(users));
+    socket.emit('active_users', Object.keys(usersSocket));
   // }
   // console.log(socket.handshake.headers);
 
@@ -113,15 +119,21 @@ io.on("connection", (socket) => {
   //   socket.emit('user_messages', messages);
   // });
 
-  console.log(users);
+  console.log('active users', usersSocket);
+
+  // socket.on('logout', ()=>{
+  //   console.log('logout');
+  // })
 
   socket.on("disconnect", () => {
     // users.filter(user => user.socketId !== socket.id);
-    const filteredUsers = Object.values(users).filter(user => user.socketId !== socket.id);
+    // const filteredUsers = Object.values(users).filter(user => user.socketId !== socket.id);
     
-    console.log(filteredUsers);
-    
+    // console.log(filteredUsers);
     console.log("🔴 Client disconnected", socket.id);
+    delete usersSocket[userId]
+    socket.emit('active_users', Object.keys(usersSocket));
+    console.log('after disconnect from server', usersSocket);
   });
 });
 

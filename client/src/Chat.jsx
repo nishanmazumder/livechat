@@ -7,8 +7,8 @@ import { useContext } from 'react';
 import AuthContext from './context/authContext';
 
 function Chat() {
-  // const socket = io('http://localhost:3000'); // 5173
-  const { socket, user } = useContext(AuthContext);
+  // const { socket, user } = useContext(AuthContext);
+  const { user, socket } = useContext(AuthContext);
   const [activeUsers, setActiveUsers] = useState([]);
   const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState([
@@ -20,13 +20,25 @@ function Chat() {
     },
   ]);
 
-  console.log(user);
+  // const baseUrl = 'http://localhost:3000';
+  // let socket;
+
+  // console.log(socket);
+
+  // console.log(user);
 
   useEffect(() => {
     console.log('chat console!');
 
+    // if (socket) {
+    //   socket.on('connect', () => {
+    //     // setSocketId(socket.id);
+    //     console.log('useEffect Authcontext', socket.id);
+    //   });
+
     socket.on('active_users', (activeUsersList) => {
       setActiveUsers(activeUsersList);
+      console.log(activeUsersList);
     });
 
     // socket.on('connect', () => {
@@ -54,7 +66,8 @@ function Chat() {
     // return () => socket.disconnect();
 
     // }, [socket, messages]);
-  }, []);
+    // }
+  }, [user]);
 
   const handleSend = (messageText) => {
     const newMessage = {
@@ -65,7 +78,7 @@ function Chat() {
       time: new Date().toISOString(),
     };
 
-    socket.emit('send_message', newMessage);
+    // socket.emit('send_message', newMessage);
     setMessages((prev) => [...prev, newMessage]);
   };
 

@@ -31,7 +31,7 @@ const ChatUsers = ({ setReceiver, selectedReceiver, activeUsers }) => {
     getUsers();
   }, []);
 
-  console.log(activeUsers);
+  // console.log(activeUsers);
 
   // getting pw from users : ) lol
 
