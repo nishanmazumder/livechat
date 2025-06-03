@@ -9,18 +9,26 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState({});
   const [socketId, setSocketId] = useState('');
+
   const socket = useSocket(user);
+
+  console.log(socket);
 
   useEffect(() => {
     // socket.on('connect', () => {
     //   setSocketId(socket.id);
     //   console.log('useEffect Authcontext', socket.id);
     // });
+    //
+    // console.log(socket);
 
-    // socket.on('active_users', (activeUsersList) => {
-    //   // setActiveUsers(activeUsersList);
-    //   console.log(activeUsersList);
-    // });
+    // if (socket) {
+    //   // console.log(socket);
+    //   socket.on('active_users', (activeUsersList) => {
+    //     // setActiveUsers(activeUsersList);
+    //     console.log('activeUsersList', activeUsersList);
+    //   });
+    // }
 
     // console.log('useEffect Authcontext', socket.id);
     const checkToken = async () => {
@@ -52,7 +60,7 @@ export function AuthProvider({ children }) {
     // return () => clearInterval(interval);
 
     // return () => socket.disconnect();
-  }, []);
+  }, [user]);
 
   // console.log(activeUsers);
 

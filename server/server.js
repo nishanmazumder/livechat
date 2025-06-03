@@ -62,9 +62,14 @@ io.on("connection", (socket) => {
   //   // const activeUsers = users.map(id => Object.keys(id));
 
   // });
+
+  socket.on('send_to', (id)=> {
+    console.log(id);
+  })
   
   // if(users.length > 0){
-    socket.emit('active_users', Object.keys(usersSocket));
+    // socket.emit('active_users', Object.keys(usersSocket));
+    socket.emit('active_users', 'active usres from server');
   // }
   // console.log(socket.handshake.headers);
 
@@ -83,15 +88,22 @@ io.on("connection", (socket) => {
 
   socket.on("send_message", (messageData) => {
     // send to receiver
-    const receiverId = users[messageData?.receiverId];
+    const receiverSocketId = usersSocket[messageData?.receiverId];
+    // const receiverSocketId = usersSocket['68342f1768ad6b75c8c5b493'];
 
-    if (receiverId) {
-      console.log(receiverId);
-      console.log("receiver ID: " + io.sockets.sockets.has(receiverId));
-      console.log(messageData);
+
+    // console.log(receiverId);
+
+    // console.log(usersSocket[0]);
+    // console.log('receiver id', receiverId);
+    // console.log('receiver socekt id', receiverSocketId);
+
+    if (receiverSocketId) {
+      // console.log("receiver ID: " + io.sockets.sockets.has(receiverId));
+      // console.log(messageData);
       // console.log(io.sockets.sockets);
       // socket.broadcast.emit('receive_message', messageData);
-      socket.to(receiverId).emit("receive_message", messageData);
+      socket.to(receiverSocketId).emit("receive_message", messageData.message);
       // setTimeout(()=>{
       //   socket.to(receiverId).emit('receive_message', messageData);
       // }, 5000)

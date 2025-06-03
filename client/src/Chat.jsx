@@ -5,10 +5,11 @@ import MessageInput from './components/MessageInput';
 import ChatUsers from './components/ChatUsers';
 import { useContext } from 'react';
 import AuthContext from './context/authContext';
+import { useSocket } from './utils/socket';
 
 function Chat() {
-  // const { socket, user } = useContext(AuthContext);
-  const { user, socket } = useContext(AuthContext);
+  const { socket, user } = useContext(AuthContext);
+  // const { user } = useContext(AuthContext);
   const [activeUsers, setActiveUsers] = useState([]);
   const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState([
@@ -36,11 +37,6 @@ function Chat() {
     //     console.log('useEffect Authcontext', socket.id);
     //   });
 
-    socket.on('active_users', (activeUsersList) => {
-      setActiveUsers(activeUsersList);
-      console.log(activeUsersList);
-    });
-
     // socket.on('connect', () => {
     //   console.log('chat- on connect', socket.id);
     // });
@@ -53,15 +49,16 @@ function Chat() {
     //   setMessages((prvMsg) => [...prvMsg, msg]);
     // });
 
-    // socket.on('user_messages', (msg) => {
-    //   // console.log('use effect user_message');
-    //   setMessages(msg);
-    // });
+    socket.on('receive_message', (msg) => {
+      console.log('use effect receive_message', msg);
 
-    // return () => {
-    //   socket.off('private message');
-    //   // socket.off('user_messages');
-    // };
+      setMessages(msg);
+    });
+
+    return () => {
+      socket.off('receive_message');
+      // socket.off('user_messages');
+    };
 
     // return () => socket.disconnect();
 
@@ -78,7 +75,7 @@ function Chat() {
       time: new Date().toISOString(),
     };
 
-    // socket.emit('send_message', newMessage);
+    socket.emit('send_message', newMessage);
     setMessages((prev) => [...prev, newMessage]);
   };
 
@@ -86,7 +83,7 @@ function Chat() {
     // console.log(id);
 
     setReceiver(id);
-    // socket.emit('register', id);
+
     // socket.on('load_messages', id);
   };
 

@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRef } from 'react';
 import { io } from 'socket.io-client';
 
 export const useSocket = (userData) => {
   const socket = useRef(null);
   const baseUrl = 'http://localhost:3000';
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     if (userData?.id) {
@@ -15,6 +16,7 @@ export const useSocket = (userData) => {
       });
 
       console.log('Front - Socket connected for user:', userData.id);
+      setIsConnected(true);
     }
 
     return () => {
@@ -22,6 +24,7 @@ export const useSocket = (userData) => {
         socket.current.disconnect();
         socket.current = null;
         console.log('Front - Socket disconnected.');
+        setIsConnected(false);
       }
     };
   }, [userData]);
