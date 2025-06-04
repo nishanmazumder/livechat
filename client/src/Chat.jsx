@@ -51,8 +51,7 @@ function Chat() {
 
     socket.on('receive_message', (msg) => {
       console.log('use effect receive_message', msg);
-
-      setMessages(msg);
+      setMessages(prvMsg => [...prvMsg, msg]);
     });
 
     return () => {
@@ -65,6 +64,10 @@ function Chat() {
     // }, [socket, messages]);
     // }
   }, [user]);
+
+
+  console.log(messages);
+
 
   const handleSend = (messageText) => {
     const newMessage = {

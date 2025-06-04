@@ -1,63 +1,37 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
+@import "tailwindcss";
+@plugin "daisyui";
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-.menu {
-  background-color: #333;
-  padding: 10px;
-}
-
-.menu ul {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-}
-
-.menu ul li {
-  display: inline;
-}
-
-.menu ul li a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+@plugin "daisyui/theme" {
+  name: "abyss";
+  default: false;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-base-100: oklch(20% 0.08 209);
+  --color-base-200: oklch(15% 0.08 209);
+  --color-base-300: oklch(10% 0.08 209);
+  --color-base-content: oklch(90% 0.076 70.697);
+  --color-primary: oklch(92% 0.2653 125);
+  --color-primary-content: oklch(50% 0.2653 125);
+  --color-secondary: oklch(83.27% 0.0764 298.3);
+  --color-secondary-content: oklch(43.27% 0.0764 298.3);
+  --color-accent: oklch(43% 0 0);
+  --color-accent-content: oklch(98% 0 0);
+  --color-neutral: oklch(30% 0.08 209);
+  --color-neutral-content: oklch(90% 0.076 70.697);
+  --color-info: oklch(74% 0.16 232.661);
+  --color-info-content: oklch(29% 0.066 243.157);
+  --color-success: oklch(79% 0.209 151.711);
+  --color-success-content: oklch(26% 0.065 152.934);
+  --color-warning: oklch(84.8% 0.1962 84.62);
+  --color-warning-content: oklch(44.8% 0.1962 84.62);
+  --color-error: oklch(65% 0.1985 24.22);
+  --color-error-content: oklch(27% 0.1985 24.22);
+  --radius-selector: 2rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
 }

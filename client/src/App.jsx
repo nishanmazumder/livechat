@@ -60,7 +60,7 @@ function App() {
           <Menu />
 
           <Routes>
-            {/* <Route path='/' element={<Home />} /> */}
+            <Route path='/' element={<Home />} />
             <Route
               path='/chat'
               element={

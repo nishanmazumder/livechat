@@ -103,7 +103,7 @@ io.on("connection", (socket) => {
       // console.log(messageData);
       // console.log(io.sockets.sockets);
       // socket.broadcast.emit('receive_message', messageData);
-      socket.to(receiverSocketId).emit("receive_message", messageData.message);
+      socket.to(receiverSocketId).emit("receive_message", messageData);
       // setTimeout(()=>{
       //   socket.to(receiverId).emit('receive_message', messageData);
       // }, 5000)
