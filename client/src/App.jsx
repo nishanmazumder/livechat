@@ -6,6 +6,7 @@ import Chat from './Chat';
 import AuthContext, { AuthProvider } from './context/authContext';
 import LoginPage from './Pages/Login';
 import RegisterPage from './Pages/Register';
+import ChatPage from './Pages/Chat';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './Pages/Home';
 import Header from './components/Header';
@@ -69,6 +70,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path='/chatt' element={<ChatPage />} />
             <Route path='/login' element={<LoginPage />} />
             <Route path='/register' element={<RegisterPage />} />
           </Routes>
