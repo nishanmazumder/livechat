@@ -1,13 +1,15 @@
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import LoginForm from './components/LoginForm';
 import Chat from './Chat';
-import './App.css';
+// import './App.css';
 import AuthContext, { AuthProvider } from './context/authContext';
-import RegisterForm from './components/RegisterForm';
+import LoginPage from './Pages/Login';
+import RegisterPage from './Pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
-import Home from './Home';
+import HomePage from './Pages/Home';
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 const Menu = () => {
   const { user, logout } = useContext(AuthContext);
@@ -49,18 +51,16 @@ function App() {
 
   return (
     <AuthProvider>
-      <div className='App'>
-        <h1>bti Healthy Harvest</h1>
+      <div className='min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white font-sans'>
         {notice && (
           <span color='red'>
             You are not eligible to see this page. Please login.
           </span>
         )}
         <Router>
-          <Menu />
-
+          <Header />
           <Routes>
-            <Route path='/' element={<Home />} />
+            <Route path='/' element={<HomePage />} />
             <Route
               path='/chat'
               element={
@@ -69,10 +69,12 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path='/login' element={<LoginForm />} />
-            <Route path='/register' element={<RegisterForm />} />
+            <Route path='/login' element={<LoginPage />} />
+            <Route path='/register' element={<RegisterPage />} />
           </Routes>
         </Router>
+
+        <Footer />
       </div>
     </AuthProvider>
   );
