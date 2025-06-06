@@ -46,7 +46,7 @@ const Banner = () => {
         <div className='md:w-1/2 mt-12 md:mt-0 relative z-10'>
           <img
             ref={bgImageRef}
-            src={bannerImage}
+            src={'bannerImage'}
             alt='Chat App UI'
             className='w-full max-w-md mx-auto drop-shadow-xl'
           />

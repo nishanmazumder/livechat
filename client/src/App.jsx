@@ -66,11 +66,11 @@ function App() {
               path='/chat'
               element={
                 <ProtectedRoute>
-                  <Chat />
+                  <ChatPage />
                 </ProtectedRoute>
               }
             />
-            <Route path='/chatt' element={<ChatPage />} />
+            {/* <Route path='/chatt' element={<ChatPage />} /> */}
             <Route path='/login' element={<LoginPage />} />
             <Route path='/register' element={<RegisterPage />} />
           </Routes>

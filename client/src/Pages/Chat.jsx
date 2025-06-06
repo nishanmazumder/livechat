@@ -1,151 +1,111 @@
 // src/pages/ChatPage.jsx
-import React, { useEffect, useRef } from 'react';
-
-const users = [
-  {
-    id: 1,
-    name: 'Alice',
-    active: true,
-    avatar: 'https://i.pravatar.cc/40?img=1',
-    unread: 2,
-  },
-  {
-    id: 2,
-    name: 'Bob',
-    active: false,
-    avatar: 'https://i.pravatar.cc/40?img=2',
-    unread: 0,
-  },
-  {
-    id: 3,
-    name: 'Charlie',
-    active: true,
-    avatar: 'https://i.pravatar.cc/40?img=3',
-    unread: 5,
-  },
-  {
-    id: 4,
-    name: 'Daisy',
-    active: false,
-    avatar: 'https://i.pravatar.cc/40?img=4',
-    unread: 1,
-  },
-];
-
-const messages = [
-  { id: 1, sender: 'Alice', text: 'Hey there!' },
-  { id: 2, sender: 'Me', text: 'Hello Alice!' },
-  { id: 3, sender: 'Alice', text: 'What’s brewing today?' },
-];
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import AuthContext from '../context/authContext';
+import UserDetails from '../components/UserDetails';
+import ChatPanel from '../components/ChatPanel';
+import UserList from '../components/UserList';
+import RoomList from '../components/RoomList';
 
 const ChatPage = () => {
-  const messagesEndRef = useRef(null);
+      const { socket, user } = useContext(AuthContext);
+      // const { user } = useContext(AuthContext);
+      const [activeUsers, setActiveUsers] = useState([]);
+      const [receiver, setReceiver] = useState(null);
+      const [messages, setMessages] = useState([
+        {
+          senderId: 1,
+          receiverId: 1,
+          message: 'Welcome to the chat!',
+          time: new Date(),
+        },
+      ]);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+        useEffect(() => {
+          console.log('chat console!');
+
+          // if (socket) {
+          //   socket.on('connect', () => {
+          //     // setSocketId(socket.id);
+          //     console.log('useEffect Authcontext', socket.id);
+          //   });
+
+          // socket.on('connect', () => {
+          //   console.log('chat- on connect', socket.id);
+          // });
+
+          // console.log(messages);
+
+          // socket.on('private message', (msg) => {
+          //   console.log(msg);
+
+          //   setMessages((prvMsg) => [...prvMsg, msg]);
+          // });
+
+          socket.on('receive_message', (msg) => {
+            console.log('use effect receive_message', msg);
+            setMessages((prvMsg) => [...prvMsg, msg]);
+          });
+
+          return () => {
+            socket.off('receive_message');
+            // socket.off('user_messages');
+          };
+
+          // return () => socket.disconnect();
+
+          // }, [socket, messages]);
+          // }
+        }, [user]);
+
+          const handleSend = (messageText) => {
+            const newMessage = {
+              senderId: user?.id,
+              senderSocketId: user.socketId,
+              receiverId: receiver,
+              message: messageText,
+              time: new Date().toISOString(),
+            };
+
+            socket.emit('send_message', newMessage);
+            setMessages((prev) => [...prev, newMessage]);
+          };
+
+          const handleSelectedUser = (id) => {
+            // console.log(id);
+
+            setReceiver(id);
+
+            // socket.on('load_messages', id);
+          };
+
 
   return (
-    <div className='flex flex-col md:flex-row h-screen bg-gradient-to-br from-[#2e026d] to-[#15162c] text-white font-sans overflow-hidden'>
+    <div className='flex flex-col justify-between md:flex-row h-screen bg-gradient-to-br from-[#2e026d] to-[#15162c] text-white font-sans overflow-hidden'>
       {/* Left Sidebar */}
       <aside className='md:w-64 bg-[#1f1235] p-4 flex flex-col overflow-y-auto'>
         {/* Users */}
-        <div className='mb-4'>
-          <h2 className='text-xl font-bold mb-2'>Users</h2>
-          <ul className='space-y-2'>
-            {users.map((user) => (
-              <li
-                key={user.id}
-                className='flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-800 transition cursor-pointer relative'
-                onClick={() => alert(`Clicked on ${user.name}`)}
-              >
-                <div className='relative'>
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className='w-10 h-10 rounded-full object-cover'
-                  />
-                  {user.active && (
-                    <span className='absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-400 border-2 border-[#1f1235] animate-pulse'></span>
-                  )}
-                </div>
-                <div className='flex-1'>
-                  <span>{user.name}</span>
-                  {user.unread > 0 && (
-                    <span className='ml-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full'>
-                      {user.unread}
-                    </span>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <UserList
+          setReceiver={handleSelectedUser}
+          selectedReceiver={receiver}
+          activeUsers={activeUsers}
+        />
 
         {/* Divider */}
         <hr className='border-white/10 my-2' />
 
         {/* Rooms */}
-        <div className='mt-2'>
-          <h2 className='text-xl font-bold mb-2'>Rooms</h2>
-          <ul className='space-y-2'>
-            <li className='px-3 py-2 rounded-lg hover:bg-purple-800 transition cursor-pointer'>
-              General
-            </li>
-            <li className='px-3 py-2 rounded-lg hover:bg-purple-800 transition cursor-pointer'>
-              Tech
-            </li>
-            <li className='px-3 py-2 rounded-lg hover:bg-purple-800 transition cursor-pointer'>
-              Design
-            </li>
-          </ul>
-        </div>
+        <RoomList />
       </aside>
 
       {/* Chat Panel */}
-      <main className='flex-1 flex flex-col overflow-hidden'>
-        <div className='flex-1 overflow-y-auto p-6 space-y-4'>
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`max-w-xl px-4 py-3 rounded-2xl shadow-md bg-white/10 backdrop-blur-sm w-fit ${
-                msg.sender === 'Me'
-                  ? 'ml-auto text-right bg-purple-500/30'
-                  : 'text-left'
-              }`}
-            >
-              <p className='text-sm text-gray-300 font-medium'>{msg.sender}</p>
-              <p className='text-lg text-white'>{msg.text}</p>
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input */}
-        <div className='p-4 border-t border-white/10 bg-white/5 backdrop-blur-md flex items-center gap-2 sticky bottom-0'>
-          <input
-            type='text'
-            placeholder='Type a message...'
-            className='input input-bordered w-full bg-white/10 text-white backdrop-blur-sm placeholder:text-gray-400'
-          />
-          <button className='btn btn-primary'>Send</button>
-        </div>
-      </main>
+      {receiver ? (
+        <ChatPanel messages={messages} onSend={handleSend} />
+      ) : (
+        'Please select a user!'
+      )}
 
       {/* User Details Panel */}
-      <aside className='w-80 bg-[#1f1235] p-6 hidden lg:flex flex-col gap-4 overflow-y-auto'>
-        <div className='flex flex-col items-center text-center'>
-          <img
-            src='https://i.pravatar.cc/100?img=1'
-            alt='User'
-            className='w-24 h-24 rounded-full mb-4'
-          />
-          <h2 className='text-xl font-bold'>Alice</h2>
-          <p className='text-sm text-gray-400'>Full Stack Developer</p>
-          <p className='text-sm text-gray-500'>📍 New York, USA</p>
-          <button className='btn btn-outline mt-4'>Edit Profile</button>
-        </div>
-      </aside>
+      <UserDetails />
     </div>
   );
 };

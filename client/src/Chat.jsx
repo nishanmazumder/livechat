@@ -66,7 +66,7 @@ function Chat() {
   }, [user]);
 
 
-  console.log(messages);
+  // console.log(messages);
 
 
   const handleSend = (messageText) => {

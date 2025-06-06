@@ -1,8 +1,6 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import API from '../utils/api';
 import AuthContext from '../context/authContext';
-import { useContext } from 'react';
 
 const ChatUsers = ({ setReceiver, selectedReceiver, activeUsers }) => {
   const [users, setUsers] = useState([]);

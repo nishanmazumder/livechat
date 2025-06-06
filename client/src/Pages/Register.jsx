@@ -56,7 +56,7 @@ const RegisterPage = () => {
         >
           <div className='relative w-full max-w-md'>
             <img
-              src={loginImage}
+              src={'loginImage'}
               alt='Floating Graphic'
               className='w-full rounded-lg drop-shadow-2xl'
               style={{ objectFit: 'cover' }}

@@ -33,7 +33,7 @@ const Service = () => {
           <div className='md:w-1/2'>
             <img
               ref={image1Ref}
-              src={serviceImage1}
+              src={'serviceImage1'}
               alt='Instant Conversations'
               className='rounded-lg shadow-lg w-full'
             />
@@ -50,7 +50,7 @@ const Service = () => {
           <div className='md:w-1/2'>
             <img
               ref={image2Ref}
-              src={serviceImage2}
+              src={'serviceImage2'}
               alt='Warm & Private'
               className='rounded-lg shadow-lg w-full'
             />
