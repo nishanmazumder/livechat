@@ -6,78 +6,104 @@ import ChatPanel from '../components/ChatPanel';
 import UserList from '../components/UserList';
 import RoomList from '../components/RoomList';
 
+const dummyMessages = [
+  {
+    senderId: 1,
+    receiverId: 2,
+    message: 'Welcome to the chat!',
+    time: new Date(),
+  },
+  {
+    senderId: 2,
+    receiverId: 1,
+    message: 'Thanks! Excited to be here.',
+    time: new Date(),
+  },
+  {
+    senderId: 1,
+    receiverId: 3,
+    message: 'Hey there! How’s your day going?',
+    time: new Date(),
+  },
+  {
+    senderId: 3,
+    receiverId: 1,
+    message: 'All good! Just checking out the app.',
+    time: new Date(),
+  },
+  {
+    senderId: 2,
+    receiverId: 3,
+    message: 'Welcome! This chat system looks great!',
+    time: new Date(),
+  },
+];
+
 const ChatPage = () => {
-      const { socket, user } = useContext(AuthContext);
-      // const { user } = useContext(AuthContext);
-      const [activeUsers, setActiveUsers] = useState([]);
-      const [receiver, setReceiver] = useState(null);
-      const [messages, setMessages] = useState([
-        {
-          senderId: 1,
-          receiverId: 1,
-          message: 'Welcome to the chat!',
-          time: new Date(),
-        },
-      ]);
+  const { socket, user } = useContext(AuthContext);
+  // const { user } = useContext(AuthContext);
+  const [activeUsers, setActiveUsers] = useState([]);
+  const [receiver, setReceiver] = useState(null);
+  const [messages, setMessages] = useState(dummyMessages);
 
-        useEffect(() => {
-          console.log('chat console!');
+  useEffect(() => {
+    console.log('chat console!');
 
-          // if (socket) {
-          //   socket.on('connect', () => {
-          //     // setSocketId(socket.id);
-          //     console.log('useEffect Authcontext', socket.id);
-          //   });
+    // if (socket) {
+    //   socket.on('connect', () => {
+    //     // setSocketId(socket.id);
+    //     console.log('useEffect Authcontext', socket.id);
+    //   });
 
-          // socket.on('connect', () => {
-          //   console.log('chat- on connect', socket.id);
-          // });
+    // socket.on('connect', () => {
+    //   console.log('chat- on connect', socket.id);
+    // });
 
-          // console.log(messages);
+    // console.log(messages);
 
-          // socket.on('private message', (msg) => {
-          //   console.log(msg);
+    socket.on('user_messages', (msgArray) => {
+      console.log(msgArray);
+      // let allMessages = msgArray.map((data) => data.message);
+      setMessages((prvMsg) => [...prvMsg, msgArray]);
+    });
 
-          //   setMessages((prvMsg) => [...prvMsg, msg]);
-          // });
+    socket.on('receive_message', (msg) => {
+      console.log('use effect receive_message', msg);
+      setMessages((prvMsg) => [...prvMsg, msg]);
+    });
 
-          socket.on('receive_message', (msg) => {
-            console.log('use effect receive_message', msg);
-            setMessages((prvMsg) => [...prvMsg, msg]);
-          });
+    return () => {
+      socket.off('receive_message');
+      socket.off('user_messages');
+    };
 
-          return () => {
-            socket.off('receive_message');
-            // socket.off('user_messages');
-          };
+    // return () => socket.disconnect();
 
-          // return () => socket.disconnect();
+    // }, [socket, messages]);
+    // }
+  }, [user, receiver, messages]);
 
-          // }, [socket, messages]);
-          // }
-        }, [user]);
+  console.log(messages);
 
-          const handleSend = (messageText) => {
-            const newMessage = {
-              senderId: user?.id,
-              senderSocketId: user.socketId,
-              receiverId: receiver,
-              message: messageText,
-              time: new Date().toISOString(),
-            };
+  const handleSend = (messageText) => {
+    const newMessage = {
+      senderId: user?.id,
+      senderSocketId: user.socketId,
+      receiverId: receiver,
+      message: messageText,
+      time: new Date().toISOString(),
+    };
 
-            socket.emit('send_message', newMessage);
-            setMessages((prev) => [...prev, newMessage]);
-          };
+    socket.emit('send_message', newMessage);
+    setMessages((prev) => [...prev, newMessage]);
+  };
 
-          const handleSelectedUser = (id) => {
-            // console.log(id);
+  const handleSelectedUser = (id) => {
+    // console.log(id);
 
-            setReceiver(id);
-
-            // socket.on('load_messages', id);
-          };
-
+    setReceiver(id);
+    socket.emit('load_messages', id);
+  };
 
   return (
     <div className='flex flex-col justify-between md:flex-row h-screen bg-gradient-to-br from-[#2e026d] to-[#15162c] text-white font-sans overflow-hidden'>

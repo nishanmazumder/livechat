@@ -111,10 +111,10 @@ router.get('/action', async (req, res) => {
 
     // create index
     // await collection.createIndex({ receiverId: 1 });
-    // await msgCollection.createIndex(
-    //   { senderId: 1, receiverId: 1, time: 1 },
-    //   { name: "sender_receiver_time" }
-    // );
+    await msgCollection.createIndex(
+      { senderId: 1, receiverId: 1, time: 1 },
+      { name: "sender_receiver_time" }
+    );
 
     // empty data
     // await db.collection('users').deleteMany({});

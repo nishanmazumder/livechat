@@ -42,7 +42,7 @@ const UserList = ({ setReceiver, selectedReceiver, activeUsers }) => {
       return await API.get('/users')
         .then((response) => {
           const filteredUsers = response?.data.filter(
-            (getUser) => getUser._id !== user._id
+            (getUser) => getUser._id !== user.id
           );
 
           setUsers(filteredUsers);
@@ -68,13 +68,9 @@ const UserList = ({ setReceiver, selectedReceiver, activeUsers }) => {
           {users.map((user) => (
             <li
               key={user._id}
-              className={
-                'flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-800 transition cursor-pointer relative ' +
-                  user._id ===
-                selectedReceiver
-                  ? 'active'
-                  : ''
-              }
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-800 transition cursor-pointer relative ${
+                user._id === selectedReceiver ? 'bg-purple-800' : ''
+              }`}
               onClick={() => setReceiver(user._id)}
             >
               <div className='relative'>

@@ -86,7 +86,7 @@ io.on("connection", (socket) => {
   //   });
   // }
 
-  socket.on("send_message", (messageData) => {
+  socket.on("send_message", async (messageData) => {
     // send to receiver
     const receiverSocketId = usersSocket[messageData?.receiverId];
     // const receiverSocketId = usersSocket['68342f1768ad6b75c8c5b493'];
@@ -112,24 +112,28 @@ io.on("connection", (socket) => {
     }
 
     // insert msg to db
-    // const convertMsgData = {
-    //   ...messageData,
-    //   senderId: new ObjectId(String(messageData.senderId)),
-    //   receiverId: new ObjectId(String(messageData.receiverId))
-    // }
-    // const db = await connectDB();
-    // await db.collection('message').insertOne(convertMsgData);
+    const convertMsgData = {
+      ...messageData,
+      senderId: new ObjectId(String(messageData.senderId)),
+      receiverId: new ObjectId(String(messageData.receiverId))
+    }
+    const db = await connectDB();
+    await db.collection('message').insertOne(convertMsgData);
   });
 
-  // socket.on('load_messages', async (id) => {
-  //   const messages = await db.collection('message').find({ userId: new ObjectId(String(id)) }).toArray();
+  socket.on("load_messages", async (id) => {
+    const db = await connectDB();
+    const messages = await db
+      .collection("message")
+      .find({ receiverId: new ObjectId(String(id)) })
+      .toArray();
 
-  //   // console.log(id);
-  //   // console.log(messages);
-  //   // console.log('message found!');
+    // console.log(id);
+    // console.log(messages);
+    // console.log('message found!');
 
-  //   socket.emit('user_messages', messages);
-  // });
+    socket.emit("user_messages", messages);
+  });
 
   console.log('active users', usersSocket);
 

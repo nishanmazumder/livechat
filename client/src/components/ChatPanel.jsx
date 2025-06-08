@@ -1,21 +1,23 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-const messages = [
-  { id: 1, sender: 'Alice', text: 'Hey there!' },
-  { id: 2, sender: 'Me', text: 'Hello Alice!' },
-  { id: 3, sender: 'Alice', text: 'What’s brewing today?' },
-];
+const options = {
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+};
 
 const ChatPanel = ({ messages, onSend }) => {
   const messagesEndRef = useRef(null);
- const [text, setText] = useState('');
+  const [text, setText] = useState('');
 
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      onSend(text);
-      setText('');
-    };
-
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSend(text);
+    setText('');
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -25,25 +27,30 @@ const ChatPanel = ({ messages, onSend }) => {
     <>
       <main className='flex-1 flex flex-col overflow-hidden'>
         <div className='flex-1 overflow-y-auto p-6 space-y-4'>
-          {messages.map((msg) => (
+          {messages.map((msg, index) => (
             <div
-              key={msg.id}
+              key={`message_${index}`}
               className={`max-w-xl px-4 py-3 rounded-2xl shadow-md bg-white/10 backdrop-blur-sm w-fit ${
-                msg.sender === 'Me'
+                0 === index % 2
                   ? 'ml-auto text-right bg-purple-500/30'
                   : 'text-left'
               }`}
             >
-              <p className='text-sm text-gray-300 font-medium'>{msg.sender}</p>
-              <p className='text-lg text-white'>{msg.text}</p>
+              <p className='text-sm text-gray-300 font-medium'>
+                {msg.receiverId}
+              </p>
+              <p className='text-lg text-white'>{msg.message}</p>
             </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
 
         {/* Input */}
-        <div className='p-4 border-t border-white/10 bg-white/5 backdrop-blur-md flex items-center gap-2 sticky bottom-0'>
-          <form className='message-input' onSubmit={handleSubmit}>
+        <div className='p-4 border-t border-white/10 bg-white/5 backdrop-blur-md items-center gap-2 sticky bottom-0'>
+          <form
+            className='message-input flex w-full gap-2'
+            onSubmit={handleSubmit}
+          >
             <input
               type='text'
               value={text}
