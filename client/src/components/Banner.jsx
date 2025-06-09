@@ -39,8 +39,8 @@ const Banner = () => {
             make meaningful connections — no login, just conversation.
           </p>
           <div className='flex flex-wrap gap-4'>
-            <button className='btn btn-primary btn-wide'>Join a Table</button>
-            <button className='btn btn-accent btn-wide'>Start Brewing</button>
+            <button className='btn btn-primary btn-wide'>Join a Room</button>
+            <button className='btn btn-accent btn-wide'>Start Chatting</button>
           </div>
         </div>
         <div className='md:w-1/2 mt-12 md:mt-0 relative z-10'>

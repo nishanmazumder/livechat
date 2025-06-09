@@ -25,7 +25,7 @@ app.use("/", routes);
 // Socket
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', // 3000
+    origin: 'http://localhost:5173',
     // origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
@@ -43,7 +43,6 @@ io.on("connection", (socket) => {
     usersSocket[userId] = socket.id;
   }
 
-  // console.log(users);
 
   // socket.on('message', ({id, msg})=>{
   //   // console.log('data', data);
@@ -63,10 +62,7 @@ io.on("connection", (socket) => {
 
   // });
 
-  socket.on('send_to', (id)=> {
-    console.log(id);
-  })
-  
+
   // if(users.length > 0){
     // socket.emit('active_users', Object.keys(usersSocket));
     socket.emit('active_users', 'active usres from server');
@@ -89,24 +85,9 @@ io.on("connection", (socket) => {
   socket.on("send_message", async (messageData) => {
     // send to receiver
     const receiverSocketId = usersSocket[messageData?.receiverId];
-    // const receiverSocketId = usersSocket['68342f1768ad6b75c8c5b493'];
-
-
-    // console.log(receiverId);
-
-    // console.log(usersSocket[0]);
-    // console.log('receiver id', receiverId);
-    // console.log('receiver socekt id', receiverSocketId);
 
     if (receiverSocketId) {
-      // console.log("receiver ID: " + io.sockets.sockets.has(receiverId));
-      // console.log(messageData);
-      // console.log(io.sockets.sockets);
-      // socket.broadcast.emit('receive_message', messageData);
       socket.to(receiverSocketId).emit("receive_message", messageData);
-      // setTimeout(()=>{
-      //   socket.to(receiverId).emit('receive_message', messageData);
-      // }, 5000)
     } else {
       console.log("Recipient not connected");
     }
@@ -128,24 +109,12 @@ io.on("connection", (socket) => {
       .find({ receiverId: new ObjectId(String(id)) })
       .toArray();
 
-    // console.log(id);
-    // console.log(messages);
-    // console.log('message found!');
-
     socket.emit("user_messages", messages);
   });
 
   console.log('active users', usersSocket);
 
-  // socket.on('logout', ()=>{
-  //   console.log('logout');
-  // })
-
   socket.on("disconnect", () => {
-    // users.filter(user => user.socketId !== socket.id);
-    // const filteredUsers = Object.values(users).filter(user => user.socketId !== socket.id);
-    
-    // console.log(filteredUsers);
     console.log("🔴 Client disconnected", socket.id);
     delete usersSocket[userId]
     socket.emit('active_users', Object.keys(usersSocket));

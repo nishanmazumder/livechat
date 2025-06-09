@@ -41,34 +41,19 @@ const dummyMessages = [
 
 const ChatPage = () => {
   const { socket, user } = useContext(AuthContext);
-  // const { user } = useContext(AuthContext);
   const [activeUsers, setActiveUsers] = useState([]);
   const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState(dummyMessages);
 
   useEffect(() => {
-    console.log('chat console!');
-
-    // if (socket) {
-    //   socket.on('connect', () => {
-    //     // setSocketId(socket.id);
-    //     console.log('useEffect Authcontext', socket.id);
-    //   });
-
-    // socket.on('connect', () => {
-    //   console.log('chat- on connect', socket.id);
-    // });
-
-    // console.log(messages);
-
+    
+    // load message
     socket.on('user_messages', (msgArray) => {
-      console.log(msgArray);
-      // let allMessages = msgArray.map((data) => data.message);
-      setMessages((prvMsg) => [...prvMsg, msgArray]);
+      msgArray.map((data) => setMessages((prvMsg) => [...prvMsg, data]));
     });
 
+    // send message
     socket.on('receive_message', (msg) => {
-      console.log('use effect receive_message', msg);
       setMessages((prvMsg) => [...prvMsg, msg]);
     });
 
@@ -77,10 +62,6 @@ const ChatPage = () => {
       socket.off('user_messages');
     };
 
-    // return () => socket.disconnect();
-
-    // }, [socket, messages]);
-    // }
   }, [user, receiver, messages]);
 
   console.log(messages);
@@ -99,8 +80,6 @@ const ChatPage = () => {
   };
 
   const handleSelectedUser = (id) => {
-    // console.log(id);
-
     setReceiver(id);
     socket.emit('load_messages', id);
   };

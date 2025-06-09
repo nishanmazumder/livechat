@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const options = {
   hour: 'numeric',
@@ -40,6 +40,12 @@ const ChatPanel = ({ messages, onSend }) => {
                 {msg.receiverId}
               </p>
               <p className='text-lg text-white'>{msg.message}</p>
+
+              {msg.time && (
+                <p className='text-sm text-gray-300 font-small'>
+                  {new Date(msg.time).toLocaleString('en-US', options)}
+                </p>
+              )}
             </div>
           ))}
           <div ref={messagesEndRef} />
@@ -62,13 +68,6 @@ const ChatPanel = ({ messages, onSend }) => {
               Send
             </button>
           </form>
-
-          {/* <input
-            type='text'
-            placeholder='Type a message...'
-            className='input input-bordered w-full bg-white/10 text-white backdrop-blur-sm placeholder:text-gray-400'
-          />
-          <button className='btn btn-primary'>Send</button> */}
         </div>
       </main>
     </>
