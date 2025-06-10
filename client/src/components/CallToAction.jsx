@@ -1,4 +1,8 @@
+import { useNavigate } from 'react-router-dom';
+
 const CallToAction = () => {
+  const navigate = useNavigate();
+
   return (
     <>
       {/* Call to Action Section */}
@@ -9,7 +13,10 @@ const CallToAction = () => {
             Thousands are connecting daily over ChayerCup. Ready to join the
             conversation?
           </p>
-          <button className='btn btn-warning btn-lg shadow-md'>
+          <button
+            onClick={() => navigate('/login')}
+            className='btn btn-warning btn-lg shadow-md'
+          >
             Start Chatting
           </button>
         </div>

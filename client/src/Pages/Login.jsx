@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import AuthContext from '../context/authContext';
 import loginImage from '../assets/chat-app-image (3).png';
@@ -84,12 +84,12 @@ const LoginPage = () => {
             </button>
           </form>
           <div className='flex justify-between mt-4 text-sm text-white/80'>
-            <a href='#' className='link link-hover'>
+            <Link className='link link-hover' to='/'>
               Forgot password?
-            </a>
-            <a href='/signup' className='link link-hover'>
+            </Link>
+            <Link className='link link-hover' to='/register'>
               Don’t have an account? Sign up
-            </a>
+            </Link>
           </div>
         </div>
       </div>

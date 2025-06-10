@@ -102,9 +102,7 @@ const RegisterPage = () => {
             </button>
           </form>
           <div className='flex justify-center mt-4 text-sm text-white/80'>
-            <a href='' className='link link-hover'>
-              We will keep your data secure!
-            </a>
+            <span className='text-sm'>We will keep your data secure!</span>
           </div>
         </div>
       </div>
